@@ -1,0 +1,922 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fondée formalités</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F4F6FA;--surf:#fff;--ink:#0F1B3D;--ink2:#4A5575;--line:#DAE0EE;--tint:#E3EAFF;--hi:#FFE066;--red:#C9261F;--ok:#17704A;--r:14px}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.55 'Instrument Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:'Bricolage Grotesque','Instrument Sans',sans-serif;line-height:1.05;letter-spacing:-.03em;margin:0;font-weight:700}
+p{margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.wrap{max-width:1200px;margin:0 auto;padding:0 20px}
+@media(min-width:900px){.wrap{padding:0 40px}}
+
+.top{position:sticky;top:0;z-index:30;background:rgba(244,246,250,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;height:64px;gap:18px}
+.logo{font:800 27px 'Bricolage Grotesque',sans-serif;letter-spacing:-.045em;text-decoration:none;margin-right:auto}
+.logo i{color:var(--red);font-style:normal}
+.lnk{background:none;border:0;padding:10px 6px;font-weight:500;cursor:pointer;text-decoration:none;color:var(--ink2);font-size:15px}
+.lnk:hover{color:var(--ink)}
+.lnk .m{display:none}
+.hide-m{display:none}
+@media(min-width:700px){.hide-m{display:inline-block}}
+@media(max-width:699px){.lnk .d{display:none}.lnk .m{display:inline}}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:50px;padding:0 24px;border-radius:999px;border:2px solid var(--ink);background:var(--ink);color:#fff;font-weight:600;cursor:pointer;text-decoration:none;transition:transform .15s,background .15s;font-size:16px}
+.btn:hover{transform:translateY(-2px)}
+.btn.alt{background:transparent;color:var(--ink)}
+.btn.alt:hover{background:var(--tint)}
+.btn.sm{min-height:42px;padding:0 18px;font-size:14px}
+.btn[disabled]{opacity:.4;cursor:not-allowed;transform:none}
+.btn svg{width:18px;height:18px}
+
+.hero{display:grid;gap:44px;padding:40px 0 64px}
+.hero h1{font-size:clamp(2.6rem,8vw,5rem);max-width:12ch}
+.hero .lead{font-size:18px;color:var(--ink2);max-width:46ch;margin-top:18px}
+.nameIn{width:100%;border:0;border-bottom:3px solid var(--ink);background:transparent;font:700 clamp(1.7rem,5vw,2.7rem)/1.2 'Bricolage Grotesque',sans-serif;letter-spacing:-.025em;padding:8px 0;margin-top:30px;border-radius:0;min-height:60px}
+.nameIn::placeholder{color:#8F99B8}
+.nameIn:focus-visible{outline:0;border-bottom-color:var(--red)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+.chip{position:relative}
+.chip input{position:absolute;opacity:0;inset:0;width:100%;height:100%;margin:0;cursor:pointer}
+.chip span{display:inline-flex;align-items:center;min-height:46px;padding:0 20px;border:2px solid var(--line);border-radius:999px;background:#fff;font-weight:600;pointer-events:none}
+.chip input:checked+span{border-color:var(--ink);background:var(--hi)}
+.chip input:focus-visible+span{outline:3px solid var(--ink);outline-offset:2px}
+.hint{margin-top:12px;color:var(--ink2);min-height:26px}
+.hero .cta{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-top:24px}
+.hero .cta small{color:var(--ink2);max-width:34ch;line-height:1.35}
+@media(min-width:900px){.hero{grid-template-columns:1.05fr .95fr;align-items:center;padding:72px 0 96px;gap:64px}}
+
+.sheet{position:relative;margin:0 16px 16px 0}
+.sheet:before{content:"";position:absolute;inset:16px -16px -16px 16px;background:var(--tint);border:1px solid var(--line);border-radius:8px}
+.paper{position:relative;background:#fff;border:1px solid var(--line);border-radius:8px;padding:26px 26px 30px;font:400 15.5px/1.8 'Source Serif 4',Georgia,serif}
+.paper .pt{font:700 22px/1.15 'Bricolage Grotesque',sans-serif;letter-spacing:-.025em;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.paper p+p{margin-top:8px}
+.paper b{font-family:'Instrument Sans',sans-serif;font-size:13px;font-weight:600;color:var(--ink2);margin-right:6px}
+.bl{display:inline-block;min-width:6ch;border-bottom:1.5px dotted #8F99B8;height:1em;vertical-align:-2px}
+.fv{background:linear-gradient(var(--hi),var(--hi)) no-repeat 0 88%/100% 42%;font-weight:600}
+.fv.fresh{animation:sweep .7s ease-out}
+@keyframes sweep{from{background-size:0 42%}to{background-size:100% 42%}}
+
+.sec{padding:64px 0}
+.sec h2{font-size:clamp(2rem,5vw,3.2rem);max-width:18ch}
+.sec .sub{color:var(--ink2);max-width:52ch;margin-top:14px;font-size:17px}
+.rows{margin-top:36px;border-top:2px solid var(--ink)}
+.row{display:grid;grid-template-columns:1fr auto;gap:6px 24px;padding:24px 4px;border-bottom:1px solid var(--line);text-decoration:none;align-items:baseline;transition:background .2s}
+.row h3{font-size:clamp(1.7rem,4.6vw,2.6rem);transition:transform .25s}
+.row p{grid-column:1;color:var(--ink2);max-width:56ch}
+.row .pr{grid-column:2;grid-row:1;font-weight:600;white-space:nowrap}
+.row:hover{background:var(--tint)}
+.row:hover h3{transform:translateX(10px)}
+
+.seq{list-style:none;margin:40px 0 0;padding:0;display:grid;gap:28px;counter-reset:s}
+.seq li{position:relative;padding-left:64px;counter-increment:s}
+.seq li:before{content:counter(s);position:absolute;left:0;top:0;width:44px;height:44px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font:700 20px 'Bricolage Grotesque',sans-serif}
+.seq li:after{content:"";position:absolute;left:21px;top:50px;bottom:-24px;width:2px;background:var(--line)}
+.seq li:last-child:after{display:none}
+.seq h3{font-size:22px}
+.seq p{color:var(--ink2);margin-top:4px}
+@media(min-width:900px){.seq{grid-template-columns:repeat(4,1fr);gap:28px}.seq li{padding:60px 0 0}.seq li:after{left:52px;right:-28px;top:21px;bottom:auto;width:auto;height:2px}}
+
+.plans{display:grid;gap:16px;margin-top:36px}
+.plan{background:#fff;border:2px solid var(--line);border-radius:20px;padding:28px;position:relative;display:flex;flex-direction:column}
+.plan.rec{border-color:var(--ink);box-shadow:8px 8px 0 var(--tint)}
+.plan .tag{position:absolute;top:-14px;left:24px;background:var(--hi);border:2px solid var(--ink);border-radius:999px;padding:2px 14px;font-weight:600;font-size:14px}
+.plan h3{font-size:26px}
+.plan .price{font:800 56px/1 'Bricolage Grotesque',sans-serif;letter-spacing:-.04em;margin:18px 0 2px}
+.plan .price small{font:500 16px 'Instrument Sans',sans-serif;letter-spacing:0;color:var(--ink2)}
+.plan .fees{color:var(--ink2);font-size:14px;margin-bottom:20px}
+.plan ul{list-style:none;padding:0;margin:0 0 26px;display:grid;gap:10px;flex:1}
+.plan li{padding-left:28px;position:relative}
+.plan li:before{content:"";position:absolute;left:0;top:5px;width:18px;height:18px;background:var(--ink);-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12l5 5L20 7'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12l5 5L20 7'/%3E%3C/svg%3E") center/contain no-repeat}
+.plan li.lead{padding-left:0;font-weight:600;color:var(--ink2)}
+.plan li.lead:before{display:none}
+.tabs{display:inline-flex;gap:4px;padding:4px;border-radius:999px;background:#fff;border:1px solid var(--line);margin-top:24px;flex-wrap:wrap}
+.tabs button{border:0;background:none;border-radius:999px;min-height:42px;padding:0 18px;font-weight:600;cursor:pointer;color:var(--ink2)}
+.tabs button[aria-pressed=true]{background:var(--ink);color:#fff}
+@media(min-width:900px){.plans{grid-template-columns:repeat(3,1fr);gap:22px}}
+
+.faq{margin-top:30px;border-top:2px solid var(--ink)}
+.faq details{border-bottom:1px solid var(--line);padding:4px 0}
+.faq summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:16px;align-items:center;padding:18px 0;font:700 20px 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em;min-height:56px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary:after{content:"+";font-size:28px;line-height:1;transition:transform .2s}
+.faq details[open] summary:after{transform:rotate(45deg)}
+.faq details p{color:var(--ink2);padding:0 0 20px;max-width:62ch}
+
+.band{background:var(--ink);color:#fff;border-radius:28px;padding:44px 28px;display:grid;gap:22px;justify-items:start;margin-bottom:64px}
+.band h2{font-size:clamp(2rem,5vw,3.4rem);max-width:16ch}
+.band .btn{background:var(--hi);color:var(--ink);border-color:var(--hi)}
+@media(min-width:900px){.band{padding:64px;grid-template-columns:1fr auto;align-items:center}}
+.foot{border-top:1px solid var(--line);padding:32px 0 48px;color:var(--ink2);font-size:14px}
+.foot .wrap{display:flex;flex-wrap:wrap;gap:12px 28px;align-items:center}
+.foot .logo{color:var(--ink);font-size:22px;margin-right:12px}
+.foot a{color:var(--ink2)}
+
+.flow{display:grid;gap:28px;padding:28px 0 56px}
+@media(min-width:960px){.flow{grid-template-columns:minmax(0,1fr) 400px;gap:56px;padding-top:44px}}
+.stepbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.stepbar .st{display:flex;align-items:center;gap:8px;font-weight:600;font-size:14px;color:var(--ink2);padding:6px 12px 6px 6px;border-radius:999px;background:transparent}
+.stepbar .st i{width:26px;height:26px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font:700 12px 'Instrument Sans',sans-serif;font-style:normal;background:#fff}
+.stepbar .st.on{color:var(--ink);background:#fff;border:1px solid var(--line)}
+.stepbar .st.on i{background:var(--ink);border-color:var(--ink);color:#fff}
+.stepbar .st.done i{background:var(--ok);border-color:var(--ok);color:#fff}
+.stepbar .st:not(.on) span{display:none}.stepbar .st:not(.on){padding:6px}
+@media(max-width:699px){.actions .btn{padding:0 18px;font-size:15px;white-space:nowrap}.tabs button{padding:0 12px;font-size:14px}}
+.meter{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin-top:18px}
+.meter div{height:100%;background:var(--ink);border-radius:99px;transition:width .4s}
+.mt{display:flex;justify-content:space-between;color:var(--ink2);font-size:14px;margin-top:8px}
+.mt button{background:none;border:0;text-decoration:underline;cursor:pointer;color:var(--ink2);padding:0;font-size:14px}
+.flow h1{font-size:clamp(2.2rem,6vw,3.4rem);margin-top:30px;max-width:16ch}
+.flow .sub{color:var(--ink2);margin-top:10px;max-width:52ch}
+.fbody{margin-top:28px}
+.f{display:grid;gap:6px;margin-bottom:20px}
+.f label{font-weight:600;font-size:15px}
+.f label .facu{font-weight:400;color:var(--ink2);font-size:13px;margin-left:6px}
+.f small{color:var(--ink2);margin-top:-2px}
+.f input,.f select,.f textarea{width:100%;min-height:54px;padding:12px 16px;border:2px solid var(--line);border-radius:12px;background:#fff;transition:border-color .15s}
+.f textarea{resize:vertical}
+.f input:focus,.f select:focus,.f textarea:focus{outline:0;border-color:var(--ink);box-shadow:0 3px 0 var(--hi)}
+.f .msg{color:var(--red);font-size:14px;font-weight:500;min-height:0}
+.f.err input,.f.err select,.f.err textarea{border-color:var(--red)}
+.f.chk label{display:flex;gap:12px;align-items:flex-start;font-weight:500;line-height:1.4;cursor:pointer;padding:14px 16px;border:2px solid var(--line);border-radius:12px;background:#fff}
+.f.chk input{width:22px;height:22px;min-height:0;margin:0;flex:none;accent-color:var(--ink)}
+.g2{display:grid;gap:0 16px}
+@media(min-width:640px){.g2{grid-template-columns:1fr 1fr}}
+.opts{display:grid;gap:10px;margin-bottom:22px}
+.opt{position:relative;display:block;cursor:pointer}
+.opt input{position:absolute;opacity:0;inset:0;margin:0;width:100%;height:100%;cursor:pointer}
+.opt>span{display:block;padding:16px 18px 16px 54px;border:2px solid var(--line);border-radius:14px;background:#fff;position:relative;transition:border-color .15s,background .15s}
+.opt>span:before{content:"";position:absolute;left:18px;top:19px;width:22px;height:22px;border-radius:50%;border:2px solid var(--line);background:#fff}
+.opt input:checked+span{border-color:var(--ink);background:#fff;box-shadow:5px 5px 0 var(--tint)}
+.opt input:checked+span:before{border-color:var(--ink);background:radial-gradient(circle,var(--ink) 0 5px,#fff 6px)}
+.opt input:focus-visible+span{outline:3px solid var(--ink);outline-offset:2px}
+.opt b{display:block;font-weight:600}
+.opt em{display:block;font-style:normal;color:var(--ink2);font-size:14px;margin-top:2px}
+.opt .pp{position:absolute;right:16px;top:14px;font:700 20px 'Bricolage Grotesque',sans-serif}
+.opt.rec>span:after{content:"Recommandée";position:absolute;right:16px;bottom:14px;background:var(--hi);border-radius:99px;padding:0 10px;font-size:12px;font-weight:600}
+.opt.rec em{padding-right:110px}
+.cardx{background:#fff;border:1px solid var(--line);border-radius:18px;padding:20px 20px 4px;margin-bottom:16px}
+.cardx h3{font-size:19px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.cardx h3 button{background:none;border:0;color:var(--red);font:600 14px 'Instrument Sans',sans-serif;cursor:pointer;min-height:40px;padding:0 4px}
+.sumline{display:flex;justify-content:space-between;gap:16px;padding:12px 16px;border-radius:12px;background:var(--tint);font-weight:600;margin-bottom:16px}
+.sumline.bad{background:#FBE3E1;color:var(--red)}
+.drop{display:flex;gap:14px;align-items:center;padding:16px;border:2px dashed #AEB8D6;border-radius:14px;background:#fff;cursor:pointer;margin-bottom:12px;position:relative}
+.drop input{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer}
+.drop svg{flex:none;width:28px;height:28px;color:var(--ink2)}
+.drop b{display:block;font-weight:600}
+.drop em{font-style:normal;color:var(--ink2);font-size:14px}
+.drop.has{border-style:solid;border-color:var(--ok)}
+.drop.has svg{color:var(--ok)}
+.drop:focus-within{outline:3px solid var(--ink);outline-offset:2px}
+.recap{background:#fff;border:1px solid var(--line);border-radius:18px;padding:20px;margin-top:8px}
+.recap div{display:flex;justify-content:space-between;gap:16px;padding:7px 0}
+.recap .tot{border-top:2px solid var(--ink);margin-top:8px;padding-top:14px;font:800 24px 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em}
+.recap small{display:block;color:var(--ink2);margin-top:8px}
+.actions{position:sticky;bottom:0;display:flex;gap:12px;justify-content:space-between;padding:14px 0;background:linear-gradient(transparent,var(--bg) 24%);margin-top:20px;z-index:5}
+.actions .btn:last-child{margin-left:auto}
+.stepErr{color:var(--red);font-weight:600;margin-top:4px;min-height:0}
+.aside{display:none}
+@media(min-width:960px){.aside{display:block;position:sticky;top:96px;align-self:start}.peek{display:none}}
+.peek{border:1px solid var(--line);border-radius:14px;background:#fff;padding:0 16px}
+.peek summary{cursor:pointer;font-weight:600;min-height:52px;display:flex;align-items:center}
+.peek .sheet{margin:6px 14px 28px 0}
+.aside h4{font-size:15px;margin:0 0 16px;color:var(--ink2);font-family:'Instrument Sans',sans-serif;letter-spacing:0;font-weight:600}
+
+.done{padding:48px 0 72px}
+.done h1{font-size:clamp(2.6rem,7vw,4.4rem);max-width:12ch}
+.done .ref{display:inline-block;margin-top:20px;background:var(--hi);padding:6px 14px;border-radius:8px;font-weight:600}
+.mails{display:grid;gap:22px;margin-top:40px}
+@media(min-width:900px){.mails{grid-template-columns:1fr 1fr}}
+.mailcap{font-weight:600;color:var(--ink2);margin-bottom:10px;font-size:14px}
+.mail{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.mail .mh{padding:14px 18px;border-bottom:1px solid var(--line);background:#FAFBFE;font-size:14px;color:var(--ink2);line-height:1.6}
+.mail .mh b{color:var(--ink)}
+.mail .mb{padding:20px 18px;font-size:15px}
+.mail .mb p+p{margin-top:12px}
+.mail .mb .btn{margin-top:16px}
+.mail table{border-collapse:collapse;width:100%;margin-top:12px;font-size:14px}
+.mail td{padding:7px 0;border-bottom:1px solid var(--line);vertical-align:top}
+.mail td:first-child{color:var(--ink2);width:40%}
+
+.track{padding:40px 0 72px}
+.track h1{font-size:clamp(2.4rem,7vw,4rem);max-width:14ch}
+.lookup{display:grid;gap:0 16px;margin-top:28px;max-width:720px}
+@media(min-width:700px){.lookup{grid-template-columns:1fr 1fr auto;align-items:end}.lookup .btn{margin-bottom:20px}}
+.case{margin-top:28px;display:grid;gap:28px}
+@media(min-width:960px){.case{grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:48px}}
+.card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:24px;position:relative;overflow:hidden}
+.card h2{font-size:28px}
+.meta{color:var(--ink2);margin-top:6px}
+.alert{margin-top:20px;padding:16px 18px;border-radius:14px;background:var(--hi);border:2px solid var(--ink);font-weight:500}
+.alert b{display:block;font-weight:700;margin-bottom:2px}
+.alert .btn{margin-top:12px}
+.tl{list-style:none;margin:24px 0 0;padding:0}
+.tl li{position:relative;padding:0 0 26px 46px}
+.tl li:before{content:"";position:absolute;left:0;top:0;width:30px;height:30px;border-radius:50%;border:2px solid var(--line);background:#fff}
+.tl li:after{content:"";position:absolute;left:14px;top:34px;bottom:2px;width:2px;background:var(--line)}
+.tl li:last-child:after{display:none}
+.tl li.ok:before{background:var(--ok);border-color:var(--ok)}
+.tl li.ok:after{background:var(--ok)}
+.tl li.ok:before{background:var(--ok) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 12.5l4 4 8-9'/%3E%3C/svg%3E") center/18px no-repeat}
+.tl li.now:before{border-color:var(--ink);border-width:3px;background:var(--hi)}
+.tl li.block:before{border-color:var(--red);background:#FBE3E1}
+.tl b{display:block;font-weight:600;font-size:17px}
+.tl span{color:var(--ink2);font-size:15px}
+.tl li.wait b{color:var(--ink2);font-weight:500}
+.stamp{position:absolute;right:22px;bottom:26px;border:4px solid var(--red);color:var(--red);border-radius:10px;padding:4px 14px;font:800 22px 'Bricolage Grotesque',sans-serif;letter-spacing:.02em;transform:rotate(-9deg);opacity:.92;animation:thud .5s cubic-bezier(.2,1.6,.4,1) both;background:rgba(255,255,255,.6);text-transform:uppercase}
+@keyframes thud{from{transform:rotate(-9deg) scale(2);opacity:0}to{transform:rotate(-9deg) scale(1);opacity:.92}}
+.msgs{margin-top:8px}
+.msgs p{padding:12px 0;border-bottom:1px solid var(--line);font-size:15px}
+.msgs p small{display:block;color:var(--ink2)}
+.empty{margin-top:28px;padding:28px;border:2px dashed #AEB8D6;border-radius:18px;color:var(--ink2);max-width:720px}
+
+.admin{padding:32px 0 72px}
+.admin h1{font-size:clamp(2.2rem,6vw,3.4rem)}
+.demo{display:inline-block;margin-top:14px;padding:6px 12px;border-radius:8px;background:var(--hi);font-size:14px;font-weight:500}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:28px}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px 18px}
+.kpi b{display:block;font:800 40px/1 'Bricolage Grotesque',sans-serif;letter-spacing:-.04em}
+.kpi span{color:var(--ink2);font-size:14px}
+.kpi.red b{color:var(--red)}
+@media(min-width:800px){.kpis{grid-template-columns:repeat(4,1fr)}}
+.alay{display:grid;gap:24px;margin-top:28px}
+@media(min-width:1000px){.alay{grid-template-columns:minmax(0,1fr) 300px;align-items:start}}
+.tbl{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.tbl th{text-align:left;font-size:13px;color:var(--ink2);font-weight:600;padding:12px 14px;border-bottom:1px solid var(--line);background:#FAFBFE}
+.tbl td{padding:14px;border-bottom:1px solid var(--line);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:0}
+.tbl button.rw{background:none;border:0;text-align:left;cursor:pointer;font-weight:600;padding:0;min-height:44px}
+.tbl button.rw:hover{text-decoration:underline}
+.pill{display:inline-block;padding:3px 12px;border-radius:99px;font-size:13px;font-weight:600;background:var(--tint)}
+.pill.b{background:#FBE3E1;color:var(--red)}
+.pill.d{background:#DDF3E8;color:var(--ok)}
+@media(max-width:799px){.tbl,.tbl tbody,.tbl tr,.tbl td{display:block}.tbl thead{display:none}.tbl tr{padding:12px 14px;border-bottom:1px solid var(--line)}.tbl td{border:0;padding:3px 0}.tbl td:before{content:attr(data-l)": ";color:var(--ink2);font-size:13px}}
+.auto{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px}
+.auto h3{font-size:18px;margin-bottom:6px}
+.auto p.s{color:var(--ink2);font-size:14px;margin-bottom:10px}
+.tg{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--line);font-size:14px;cursor:pointer}
+.tg input{width:22px;height:22px;margin:0;accent-color:var(--ink);flex:none}
+.drawer{position:fixed;inset:0;z-index:50;display:flex;justify-content:flex-end;background:rgba(15,27,61,.4)}
+.dpan{background:var(--bg);width:min(560px,100%);height:100%;overflow:auto;padding:24px 22px 40px;animation:slide .25s ease-out}
+@keyframes slide{from{transform:translateX(40px);opacity:0}to{transform:none;opacity:1}}
+.dpan h2{font-size:30px}
+.dpan .x{float:right;background:#fff;border:1px solid var(--line);border-radius:50%;width:44px;height:44px;cursor:pointer;font-size:20px}
+.dpan h3{font-size:18px;margin:26px 0 10px}
+.kv{display:grid;grid-template-columns:130px 1fr;gap:6px 14px;font-size:15px}
+.kv dt{color:var(--ink2)}
+.kv dd{margin:0;font-weight:500}
+.acts{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
+.acts select{min-height:42px;border:2px solid var(--line);border-radius:999px;padding:0 14px;background:#fff}
+.log{list-style:none;padding:0;margin:0}
+.log li{padding:10px 0;border-bottom:1px solid var(--line);font-size:14px}
+.log small{color:var(--ink2);display:block}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 20px;border-radius:999px;z-index:80;font-weight:500;max-width:calc(100% - 32px);animation:slide2 .25s ease-out}
+@keyframes slide2{from{opacity:0;transform:translate(-50%,12px)}to{opacity:1;transform:translate(-50%,0)}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+:root{--bg:#EDF0F8;--field:#F4F6FB;--peri:#C7D0FF}
+.top{position:sticky;top:0;z-index:30;padding:12px 0;background:none;border:0;backdrop-filter:none}
+.top .nav{display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border:1px solid var(--line);border-radius:999px;padding:7px 8px 7px 24px;box-shadow:0 8px 28px rgba(15,27,61,.07)}
+.sec h2,.faq summary{font-weight:800}
+.hero.heroPanel{background:var(--ink);color:#fff;border-radius:36px;margin-top:8px;padding:36px 22px 46px;position:relative;overflow:hidden;gap:48px}
+@media(min-width:900px){.hero.heroPanel{padding:76px 64px;border-radius:48px;gap:72px}}
+.heroPanel h1{color:#fff;font-weight:800}
+.heroPanel .lead{color:rgba(255,255,255,.76)}
+.heroPanel .nameIn{color:#fff;border-bottom-color:var(--hi)}
+.heroPanel .nameIn::placeholder{color:rgba(255,255,255,.4)}
+.heroPanel .nameIn:focus-visible{border-bottom-color:#fff}
+.heroPanel .chip span{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.24);color:#fff}
+.heroPanel .chip input:checked+span{background:var(--hi);border-color:var(--hi);color:var(--ink)}
+.heroPanel .chip input:focus-visible+span,.heroPanel :focus-visible{outline-color:#fff}
+.heroPanel .hint,.heroPanel .cta small{color:rgba(255,255,255,.74)}
+.heroPanel .btn{background:var(--hi);color:var(--ink);border-color:var(--hi)}
+.heroPanel .sheet:before{background:#6F82FF}
+.sheet{margin:10px 12px 10px 0}
+.sheet:before{inset:0;transform:rotate(3.5deg);background:var(--peri);border:0;border-radius:14px}
+.paper{border-radius:14px;box-shadow:0 20px 44px rgba(15,27,61,.14)}
+.bento{display:grid;gap:14px;margin-top:36px}
+@media(min-width:900px){.bento{grid-template-columns:repeat(6,1fr);grid-auto-rows:minmax(200px,auto)}.t1{grid-column:span 3;grid-row:span 2}.t2,.t3{grid-column:span 3}.t4{grid-column:span 6}}
+.tile{border-radius:32px;padding:26px;display:flex;flex-direction:column;justify-content:space-between;gap:36px;text-decoration:none;min-height:200px;transition:transform .25s,box-shadow .25s}
+.tile:hover{transform:translateY(-5px);box-shadow:0 22px 44px rgba(15,27,61,.13)}
+.tile .th{display:flex;justify-content:space-between;align-items:center}
+.tile .pr{background:rgba(255,255,255,.72);border-radius:99px;padding:5px 14px;font-weight:600;font-size:14px}
+.tile .go{width:46px;height:46px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;transition:transform .25s}
+.tile:hover .go{transform:rotate(-45deg)}
+.tile .go svg{width:20px;height:20px}
+.tile h3{font-size:clamp(1.8rem,4vw,2.4rem);font-weight:800}
+.t1 h3{font-size:clamp(2.3rem,6vw,3.7rem)}
+.tile p{margin-top:10px;max-width:44ch}
+.t1{background:var(--hi)}.t2{background:var(--peri)}.t3{background:#fff;border:1px solid var(--line)}.t4{background:var(--ink);color:#fff}
+.t1 p,.t2 p{color:var(--ink)}.t3 p{color:var(--ink2)}
+.t4 p{color:rgba(255,255,255,.76)}.t4 .go{background:var(--hi);color:var(--ink)}.t4 .pr{background:rgba(255,255,255,.14)}
+.panel{background:#fff;border:1px solid var(--line);border-radius:36px;padding:32px 22px 40px}
+@media(min-width:900px){.panel{padding:56px}}
+.plan{border-radius:30px}
+.plan.rec{background:var(--ink);color:#fff;border-color:var(--ink);box-shadow:none}
+.plan.rec .fees,.plan.rec .price small,.plan.rec li.lead{color:rgba(255,255,255,.72)}
+.plan.rec li:before{background:var(--hi)}
+.plan.rec .btn{background:var(--hi);color:var(--ink);border-color:var(--hi)}
+.band{background:var(--hi);color:var(--ink);border-radius:40px}
+.band .btn{background:var(--ink);color:#fff;border-color:var(--ink)}
+.tabs{box-shadow:0 4px 14px rgba(15,27,61,.05)}
+.card{border-radius:28px}.kpi{border-radius:22px}.tbl{border-radius:22px}.mail{border-radius:22px}.auto{border-radius:22px}
+.fpanel{background:#fff;border:1px solid var(--line);border-radius:32px;padding:22px 18px 6px;min-width:0}
+@media(min-width:700px){.fpanel{padding:38px 38px 10px}}
+.fpanel .f input,.fpanel .f select,.fpanel .f textarea,.fpanel .opt>span,.fpanel .cardx,.fpanel .drop,.fpanel .recap,.fpanel .f.chk label,.fpanel .peek{background:var(--field)}
+.fpanel .f input,.fpanel .f select,.fpanel .f textarea{border-radius:14px}
+.fpanel .opt>span,.fpanel .drop{border-radius:18px}
+.fpanel .cardx,.fpanel .recap{border-radius:24px;border-color:transparent}
+.fpanel .actions{background:linear-gradient(transparent,#fff 26%)}
+.fpanel .stepbar .st.on{background:var(--field)}
+.fpanel .chip span{background:var(--field)}
+.fpanel .chip input:checked+span{background:var(--hi)}
+.intro{display:grid;gap:14px;padding:12px 0 72px}
+@media(min-width:960px){.intro{grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:16px}}
+.introL{background:#fff;border:1px solid var(--line);border-radius:36px;padding:28px 22px 32px}
+.introL h1{font-size:clamp(2.4rem,6vw,3.9rem);font-weight:800;max-width:11ch}
+.introL .lead{color:var(--ink2);font-size:18px;margin:16px 0 28px;max-width:44ch}
+.introL .opt>span,.introL .chip span,.introL .f input,.introL .f select{background:var(--field)}
+.introL .chip input:checked+span{background:var(--hi)}
+.introL .opts{margin-bottom:22px}
+.introL .f{margin:22px 0 28px}
+.big{min-height:60px;font-size:17px;padding:0 32px}
+.introR{background:var(--ink);color:#fff;border-radius:36px;padding:32px 24px;display:flex;flex-direction:column;gap:26px}
+.introR h2{font-size:28px;font-weight:800}
+.introR h3{font-size:18px;font-weight:700;color:var(--hi);font-family:'Instrument Sans',sans-serif;letter-spacing:0}
+.introR .note{color:rgba(255,255,255,.72);font-size:15px}
+.introR hr{border:0;border-top:1px solid rgba(255,255,255,.18);margin:0;width:100%}
+.ck{list-style:none;padding:0;margin:12px 0 0;display:grid;gap:12px}
+.ck li{padding-left:32px;position:relative}
+.ck li:before{content:"";position:absolute;left:0;top:3px;width:20px;height:20px;background:var(--hi);-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12l5 5L20 7'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12l5 5L20 7'/%3E%3C/svg%3E") center/contain no-repeat}
+@media(min-width:700px){.introL{padding:52px}.introR{padding:52px 48px}}
+.top .wrap{display:block;height:auto}
+.plan .tag{color:var(--ink)}
+.heroPanel .paper{color:var(--ink)}
+.heroPanel h1{font-size:clamp(2.5rem,5vw,3.7rem);max-width:15ch;text-wrap:balance}
+.introR{align-self:start}
+.big{white-space:nowrap;width:100%}
+@media(min-width:700px){.big{width:auto}}
+@media(max-width:699px){.big{font-size:16px;padding:0 20px}}
+.try{font-family:'Instrument Sans',system-ui,sans-serif;padding-bottom:18px;margin-bottom:16px;border-bottom:1px dashed #B7C0DA;line-height:1.5}
+.try .dl{display:block;font-size:14px;font-weight:600;color:var(--ink2)}
+.paper .nameIn{color:var(--ink);border-bottom:3px solid var(--ink);margin-top:6px;min-height:52px;font-size:clamp(1.4rem,3.4vw,1.9rem)}
+.paper .nameIn::placeholder{color:#8F99B8}
+.paper .nameIn:focus-visible{border-bottom-color:var(--red)}
+.paper .chips{margin-top:14px}
+.paper .chip span{min-height:40px;padding:0 16px;font-size:15px;background:var(--field);border-color:var(--line);color:var(--ink)}
+.paper .chip input:checked+span{background:var(--hi);border-color:var(--ink);color:var(--ink)}
+.paper .hint{color:var(--ink2);margin-top:10px;min-height:24px;font-size:14px}
+.heroPanel .btn.alt{background:transparent;color:#fff;border-color:rgba(255,255,255,.5)}
+.heroPanel .btn.alt:hover{background:rgba(255,255,255,.1)}
+.heroPanel .cta{margin-top:28px}
+.trust{margin-top:30px;color:rgba(255,255,255,.86)}
+.solu{display:grid;gap:0;margin-top:32px;border-top:2px solid var(--ink)}
+.solu>div{padding:26px 0;border-bottom:1px solid var(--line)}
+.solu h3{font-size:24px;font-weight:800;margin-top:16px}
+.solu p{color:var(--ink2);margin-top:8px;max-width:40ch}
+.ic{display:grid;place-items:center;width:52px;height:52px;border-radius:16px;background:var(--hi)}
+.ic svg{width:26px;height:26px}
+@media(min-width:900px){.solu{grid-template-columns:repeat(4,1fr);gap:32px;border-top:0}.solu>div{border:0;border-top:2px solid var(--ink);padding:28px 0 0}}
+.panel.peri{background:var(--peri);border-color:var(--peri)}
+.panel h2{font-weight:800;font-size:clamp(2rem,5vw,3.2rem);max-width:16ch}
+.big3{display:grid;gap:14px;margin-top:32px}
+.b3{background:#fff;border-radius:28px;padding:26px}
+.b3 .num{display:block;font:800 clamp(3.4rem,8vw,4.6rem)/1 'Bricolage Grotesque',sans-serif;letter-spacing:-.05em;margin-bottom:18px}
+.b3 h3{font-size:22px;font-weight:800}
+.b3 p{color:var(--ink2);margin-top:8px}
+@media(min-width:900px){.big3{grid-template-columns:repeat(3,1fr);gap:18px}}
+.show{display:grid;gap:22px;align-items:center;padding:20px 0}
+.show h3{font-size:clamp(1.9rem,4.6vw,2.8rem);font-weight:800;max-width:14ch}
+.show p{color:var(--ink2);margin:14px 0 22px;max-width:44ch;font-size:17px}
+.vis{border-radius:36px;padding:26px 20px;display:grid;place-items:center;min-height:340px}
+.v1{background:var(--peri)}.v2{background:var(--hi)}.v3{background:var(--ink)}
+.mock{position:relative;overflow:hidden;background:#fff;border-radius:24px;padding:22px;width:100%;max-width:420px;box-shadow:0 22px 46px rgba(15,27,61,.16)}
+.mock h4{font-size:20px;font-weight:800;margin-bottom:14px}
+.mock .tl{margin-top:8px}
+.mock .tl li{padding-bottom:18px}
+.mock .stamp{right:16px;bottom:18px;top:auto;font-size:18px}
+.mrow{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--line);font-weight:500}
+.mrow:last-child{border:0}
+.msel{display:flex;gap:12px;align-items:center;padding:13px 14px;border:2px solid var(--line);border-radius:14px;margin-bottom:8px;font-weight:500}
+.msel:before{content:"";flex:none;width:18px;height:18px;border-radius:50%;border:2px solid #AEB8D6}
+.msel.on{border-color:var(--ink);background:var(--field)}
+.msel.on:before{border-color:var(--ink);background:radial-gradient(circle,var(--ink) 0 4px,#fff 5px)}
+@media(min-width:900px){.show{grid-template-columns:1fr 1fr;gap:56px;padding:28px 0}.show.rev .vis{order:2}.vis{min-height:440px}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const eur=n=>new Intl.NumberFormat('fr-FR').format(n)+' €';
+const FORMES={
+ SASU:{long:'société par actions simplifiée unipersonnelle',uni:true,dir:'Président',hint:'Un seul associé, dirigée par un président.'},
+ SAS:{long:'société par actions simplifiée',uni:false,dir:'Président',hint:'Plusieurs associés et une grande liberté dans les statuts.'},
+ EURL:{long:'entreprise unipersonnelle à responsabilité limitée',uni:true,dir:'Gérant',hint:'Un seul associé, dirigée par un gérant.'},
+ SARL:{long:'société à responsabilité limitée',uni:false,dir:'Gérant',hint:'Plusieurs associés, dirigée par un gérant.'},
+ SCI:{long:'société civile immobilière',uni:false,dir:'Gérant',hint:'Pour détenir ou gérer un bien immobilier à plusieurs.'}
+};
+const TYPES={
+ creation:{label:'Création',verb:'Créer ma société',steps:['Société','Associés','Dirigeant','Pièces','Formule']},
+ modification:{label:'Modification',verb:'Modifier ma société',steps:['Votre société','Pièces','Formule']},
+ fermeture:{label:'Fermeture',verb:'Fermer ma société',steps:['Votre société','Pièces','Formule']}
+};
+const PRIX={creation:[0,79,149],modification:[0,99,179],fermeture:[0,149,249]};
+const PLANS=[
+ {n:'Essentiel',f:['Questionnaire guidé et documents générés','Liste des pièces à fournir','Suivi de votre dossier en ligne','Vous déposez le dossier vous-même']},
+ {n:'Sérénité',rec:1,f:['Tout Essentiel, plus :','Relecture par un expert-comptable','Dépôt au guichet unique par nos soins','Annonce légale publiée','Reprise gratuite si le greffe demande une correction']},
+ {n:'Express',f:['Tout Sérénité, plus :','Traitement prioritaire sous 24 h','Rendez-vous avec le comptable','Dépôt du capital et compte pro','Premier mois de comptabilité offert']}
+];
+const OPTS=[
+ {k:'dom',n:'Domiciliation du siège',p:'dès 15 €/mois'},
+ {k:'marque',n:'Dépôt de marque',p:'dès 190 €'},
+ {k:'compta',n:'Comptabilité avec notre cabinet',p:'sur devis'}
+];
+const STEPS=[
+ {k:'Reçu',d:'Votre dossier est bien arrivé chez nous.'},
+ {k:'En vérification',d:'Un expert-comptable relit vos informations et vos pièces.'},
+ {k:'Annonce légale publiée',d:'L’annonce légale est parue dans un journal habilité.'},
+ {k:'Déposé au guichet unique',d:'Le dossier est transmis au greffe.'},
+ {k:'Immatriculé',d:'Votre société existe officiellement. Votre Kbis est disponible.'}
+];
+const endLabel=t=>t==='creation'?'Immatriculé':t==='modification'?'Modification enregistrée':'Société radiée';
+const stepLabel=(d,i)=>i===4?endLabel(d.type):STEPS[i].k;
+const PIECES=['Pièce d’identité','Justificatif de domicile','Extrait Kbis','Statuts à jour'];
+
+const fresh=()=>({nom:'',nomc:'',activite:'',capital:'1000',siege:'dirigeant',adresse:'',cloture:'31 décembre',fisc:'Impôt sur les sociétés (par défaut)',tva:'Régime réel simplifié',urgence:'Dès que possible',dirIdx:'0',dirNom:'',mandat:'Durée illimitée',nonCond:false,plan:'1',email:'',tel:'',contact:'',consent:false,later:false,siren:'',forme2:'SAS',nature:'Transfert de siège',details:'',motif:'Cessation d’activité',dateEff:''});
+const emptyA=()=>({prenom:'',nom:'',naiss:'',nat:'Française',adresse:'',apport:''});
+const S={view:'home',type:'creation',forme:'SASU',step:0,data:fresh(),assoc:[emptyA()],opts:{dom:false,marque:false,compta:false},files:{},seen:{},planTab:'creation',last:null,lookup:{ref:'FD-2611-0138',email:'lea.marchand@example.com',found:null},open:null,autos:{confirm:true,notify:true,relance:true,statuts:true}};
+S.lookup.found='FD-2611-0138';
+
+const mk=(ref,client,email,societe,forme,type,plan,step,blocked,missing,created,nature)=>({ref,client,email,societe,forme,type,plan,step,blocked,missing,created,nature,opts:{},log:[{t:created,x:'Dossier reçu',m:'E-mail de confirmation envoyé au client'}]});
+S.dossiers=[
+ mk('FD-2611-0138','Léa Marchand','lea.marchand@example.com','Studio Alba','SAS','creation',1,1,false,'',' 30 oct. 2026','Création'),
+ mk('FD-2611-0139','Karim Benali','karim.benali@example.com','Maison Nour','SASU','creation',2,0,false,'','2 nov. 2026','Création'),
+ mk('FD-2610-0127','Inès Dubreuil','ines.dubreuil@example.com','Cèdre Conseil','EURL','creation',0,3,false,'','21 oct. 2026','Création'),
+ mk('FD-2610-0119','Paul Garnier','paul.garnier@example.com','Immo Bellevue','SCI','creation',1,1,true,'Justificatif de domicile','19 oct. 2026','Création'),
+ mk('FD-2610-0102','Sarah Lemoine','sarah.lemoine@example.com','Atelier Pivoine','SARL','creation',2,4,false,'','8 oct. 2026','Création'),
+ mk('FD-2610-0111','Yann Roux','yann.roux@example.com','Garrigue Logistique','SAS','modification',1,2,false,'','14 oct. 2026','Transfert de siège')
+];
+S.dossiers[3].log.push({t:'20 oct. 2026',x:'Pièce manquante signalée',m:'Relance automatique envoyée : justificatif de domicile'});
+S.dossiers[4].log.push({t:'9 oct. 2026',x:'Passage en vérification',m:'Statut envoyé au client'},{t:'16 oct. 2026',x:'Immatriculé',m:'Kbis transmis au client'});
+
+const stepKey=()=>TYPES[S.type].steps[S.step];
+const D=()=>S.data;
+const asoc=()=>S.assoc;
+const dirName=()=>{const d=D();if(d.dirIdx==='x')return d.dirNom;const a=S.assoc[+d.dirIdx];return a?`${a.prenom} ${a.nom}`.trim():''};
+
+function fillSpan(key,ok,txt,w){
+ const was=S.seen[key];S.seen[key]=ok;
+ return ok?`<span class="fv${was?'':' fresh'}">${esc(txt)}</span>`:`<span class="bl" style="min-width:${w||8}ch"></span>`;
+}
+function siegeText(){const d=D();if(d.siege==='domiciliation')return 'à une adresse de domiciliation';return d.adresse.trim()?`au ${d.adresse.trim()}`:''}
+function docHTML(){
+ const d=D(),f=FORMES[S.forme],n=S.assoc.length;
+ if(S.view==='form'&&S.type==='modification'){
+  return `<div class="pt">Demande de modification</div>
+  <p><b>Société</b>${fillSpan('m1',!!d.nom.trim(),d.nom.trim()+(d.siren?` (SIREN ${d.siren})`:''),14)}</p>
+  <p><b>Nature</b>${fillSpan('m2',!!d.nature,d.nature,12)}</p>
+  <p><b>Détails</b>${fillSpan('m3',!!d.details.trim(),d.details.trim().slice(0,90),16)}</p>
+  <p><b>Souhaitée le</b>${fillSpan('m4',!!d.dateEff,d.dateEff,10)}</p>`;
+ }
+ if(S.view==='form'&&S.type==='fermeture'){
+  return `<div class="pt">Demande de dissolution</div>
+  <p><b>Société</b>${fillSpan('f1',!!d.nom.trim(),d.nom.trim()+(d.siren?` (SIREN ${d.siren})`:''),14)}</p>
+  <p><b>Motif</b>${fillSpan('f2',!!d.motif,d.motif,12)}</p>
+  <p><b>Effet au</b>${fillSpan('f3',!!d.dateEff,d.dateEff,10)}</p>`;
+ }
+ const cap=d.capital&&+d.capital>0;
+ const nm=d.nom.trim()||(S.view==='home'?S.ghost||'':'');
+ return `<div class="pt">Statuts${nm?'':' de la société'} ${nm?fillSpan('n0',true,nm):''}</div>
+ <p><b>Article 1</b>La société est une ${f.long}${nm?'':', dénommée '+fillSpan('n1',false,'',16)}.</p>
+ <p><b>Article 2</b>Elle a pour objet ${fillSpan('a2',!!d.activite.trim(),d.activite.trim().slice(0,110),22)}.</p>
+ <p><b>Article 3</b>Son siège est fixé ${fillSpan('a3',!!siegeText(),siegeText(),20)}.</p>
+ <p><b>Article 4</b>Son capital est de ${fillSpan('a4',!!cap,cap?new Intl.NumberFormat('fr-FR').format(+d.capital)+' €':'',8)}, ${f.uni?'détenu par un associé unique':`réparti entre ${fillSpan('a4b',true,n+' associés')}`}.</p>
+ <p><b>Article 5</b>Elle est dirigée par ${fillSpan('a5',!!dirName(),dirName(),16)}, ${f.dir.toLowerCase()}.</p>
+ <p><b>Article 6</b>Sa durée est de 99 ans. L’exercice social se clôture le ${fillSpan('a6',!!d.cloture,d.cloture,10)}.</p>`;
+}
+function pct(){
+ const d=D();let a=[];
+ if(S.type==='creation'){
+  a=[!!d.nom.trim(),!!d.activite.trim(),d.siege==='domiciliation'||!!d.adresse.trim(),+d.capital>0,S.assoc.every(x=>x.prenom&&x.nom&&x.naiss&&x.apport),!!dirName(),/.+@.+\..+/.test(d.email),d.nonCond];
+ }else{
+  a=[/^\d{9}$/.test(d.siren),!!d.nom.trim(),S.type==='modification'?!!d.details.trim():!!d.dateEff,!!d.dateEff||S.type==='modification',/.+@.+\..+/.test(d.email)];
+ }
+ return Math.round(a.filter(Boolean).length/a.length*100);
+}
+function updateDoc(){$$('.docv').forEach(el=>el.innerHTML=docHTML())}
+function updateProg(){const p=pct();const m=$('#meterBar');if(m)m.style.width=p+'%';const t=$('#pct');if(t)t.textContent=p+' % du dossier rempli'}
+function apportSum(){return S.assoc.reduce((s,a)=>s+(+a.apport||0),0)}
+function updateApports(){const el=$('#apports');if(!el)return;const s=apportSum(),c=+D().capital||0;el.className='sumline'+(s!==c?' bad':'');el.innerHTML=`<span>Total des apports</span><span>${eur(s)} sur ${eur(c)}</span>`;$$('[data-pct]').forEach(x=>{const a=S.assoc[+x.dataset.pct];x.textContent=c&&a.apport?Math.round(+a.apport/c*1000)/10+' % du capital':''})}
+function price(type,plan,opts){return PRIX[type][plan]}
+function recapHTML(){
+ const d=D(),p=+d.plan,base=PRIX[S.type][p];
+ const lines=[[`Formule ${PLANS[p].n}`,base===0?'0 €':eur(base)+' HT']];
+ OPTS.forEach(o=>{if(S.opts[o.k])lines.push([o.n,o.p])});
+ return lines.map(l=>`<div><span>${l[0]}</span><span>${l[1]}</span></div>`).join('')+
+ `<div><span>Frais officiels (greffe, annonce légale)</span><span>${S.type==='creation'?'environ 200 €':'calculés avant paiement'}</span></div>
+ <div class="tot"><span>Formule</span><span>${base===0?'0 €':eur(base)+' HT'}</span></div>
+ <small>Vous payez après la relecture de votre dossier. Tarifs provisoires pour ce prototype.</small>`;
+}
+function updateRecap(){const el=$('#recap');if(el)el.innerHTML=recapHTML()}
+
+const head=()=>`<header class="top"><div class="wrap"><div class="nav"><a class="logo" href="#/" aria-label="Fondée, accueil">fondée<i>.</i></a>
+<button class="lnk hide-m" data-act="goto" data-to="services">Services</button>
+<button class="lnk hide-m" data-act="goto" data-to="plans">Tarifs</button>
+<a class="lnk" href="#/suivi"><span class="d">Suivre mon dossier</span><span class="m">Suivi</span></a>
+<a class="btn sm" href="#/demarrer">Commencer</a></div></div></header>`;
+const foot=()=>`<footer class="foot"><div class="wrap"><a class="logo" href="#/">fondée<i>.</i></a><span>Prototype. Nom, tarifs, options et données de démonstration provisoires.</span><span>[RAISON SOCIALE] · [SIRET] · [ADRESSE]</span><a href="#/cabinet">Espace cabinet</a></div></footer>`;
+
+const svgUp='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4m0 0L7 9m5-5l5 5M4 16v3a1 1 0 001 1h14a1 1 0 001-1v-3"/></svg>';
+const svgArr='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6l6 6-6 6"/></svg>';
+
+function planCards(type){
+ return PLANS.map((p,i)=>`<article class="plan${p.rec?' rec':''}">${p.rec?'<span class="tag">Recommandée</span>':''}<h3>${p.n}</h3>
+ <div class="price">${PRIX[type][i]===0?'0 €':PRIX[type][i]+' €'} <small>HT</small></div>
+ <p class="fees">${type==='creation'?'+ frais officiels, environ 200 €':'+ frais officiels'}</p>
+ <ul>${p.f.map((x,j)=>`<li class="${x.endsWith(':')?'lead':''}">${x}</li>`).join('')}</ul>
+ <a class="btn${p.rec?'':' alt'}" href="#/demarrer/${type}" data-plan="${i}">Choisir ${p.n}</a></article>`).join('');
+}
+const ico=p=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
+const ICO={
+ doc:ico('<path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/>'),
+ calc:ico('<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 12h.01M12 12h.01M16 12h.01M8 16h.01M12 16h.01M16 16h.01"/>'),
+ card:ico('<rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h4"/>'),
+ chat:ico('<path d="M21 12a8 8 0 01-11.5 7.2L4 20l1.1-4.2A8 8 0 1121 12z"/>')
+};
+function homeView(){
+ const f=S.forme;
+ const sample={step:4,blocked:false,type:'creation',log:[{x:'Reçu',t:'Dossier reçu'},{x:'En vérification',t:'Relu par le cabinet'},{x:'Annonce légale publiée',t:'Annonce parue'},{x:'Déposé au guichet unique',t:'Transmis au greffe'}]};
+ return `<main><div class="wrap"><section class="hero heroPanel"><div>
+ <h1>Votre société prend forme ici.</h1>
+ <p class="lead">Création, modification, fermeture : vous répondez à quelques questions, un expert-comptable relit tout, vous suivez chaque étape en ligne.</p>
+ <div class="cta"><a class="btn" href="#/demarrer/creation">Créer ma société ${svgArr}</a><button type="button" class="btn alt" data-act="goto" data-to="services">Tous nos services</button></div>
+ <ul class="ck trust"><li>Relu par un expert-comptable</li><li>100 % en ligne, environ dix minutes</li><li>Dès 0 €, plus les frais officiels</li></ul>
+ </div>
+ <div class="sheet" aria-label="Essayez : aperçu de vos statuts"><div class="paper"><div class="try"><label for="heroName" class="dl">Essayez avec le nom de votre société</label>
+ <input id="heroName" class="nameIn" data-bind="nom" value="${esc(D().nom)}" placeholder="Nom de votre société" autocomplete="off">
+ <div class="chips" role="radiogroup" aria-label="Forme juridique">${Object.keys(FORMES).map(k=>`<label class="chip"><input type="radio" name="forme" value="${k}" data-bind="forme"${f===k?' checked':''}><span>${k}</span></label>`).join('')}</div>
+ <p class="hint" id="hint">${FORMES[f].hint}</p></div>
+ <div class="docv">${docHTML()}</div></div></div></section></div>
+
+ <div class="wrap"><section class="sec" id="services"><h2>La solution complète pour lancer et piloter votre société</h2>
+ <div class="solu">
+ <div><span class="ic">${ICO.doc}</span><h3>Formalités juridiques</h3><p>Statuts, annonce légale, dépôt au guichet unique. Un expert-comptable vérifie votre dossier avant tout envoi.</p></div>
+ <div><span class="ic">${ICO.calc}</span><h3>Expertise comptable</h3><p>Déléguez votre comptabilité à notre cabinet : bilan, TVA et liasse fiscale.</p></div>
+ <div><span class="ic">${ICO.card}</span><h3>Compte pro et domiciliation</h3><p>Un compte pour déposer votre capital et une adresse pour votre siège, sans paperasse.</p></div>
+ <div><span class="ic">${ICO.chat}</span><h3>Accompagnement</h3><p>Une équipe qui répond à vos questions pendant tout votre dossier.</p></div>
+ </div></section></div>
+
+ <div class="wrap"><section class="sec"><div class="panel peri"><h2>Créez votre société en 3 étapes</h2>
+ <div class="big3">
+ <div class="b3"><span class="num">01</span><h3>Vous répondez à quelques questions</h3><p>Forme juridique, siège, associés : le questionnaire vous guide, avec une aide à chaque étape.</p></div>
+ <div class="b3"><span class="num">02</span><h3>Nous constituons votre dossier</h3><p>Statuts et documents sont générés à partir de vos réponses, puis relus par un expert-comptable.</p></div>
+ <div class="b3"><span class="num">03</span><h3>Nous déposons, vous suivez</h3><p>Annonce légale, dépôt au guichet unique, puis suivi en ligne jusqu’à votre Kbis.</p></div>
+ </div><a class="btn" href="#/demarrer/creation" style="margin-top:28px">Créer ma société ${svgArr}</a></div></section></div>
+
+ <div class="wrap"><section class="sec" style="padding-bottom:24px"><h2>Fondée, la solution tout-en-un pour les entrepreneurs</h2>
+ <div class="show"><div class="vis v1"><div class="mock" aria-hidden="true"><h4>Atelier Pivoine</h4>${timeline(sample)}<div class="stamp">${endLabel('creation')}</div></div></div>
+ <div><h3>Un dossier qu’on peut suivre</h3><p>Chaque étape est visible en ligne, de la relecture au Kbis. Une pièce manque ? On vous le dit tout de suite et vous l’envoyez depuis votre téléphone.</p><a class="btn alt" href="#/suivi">Suivre un dossier</a></div></div>
+ <div class="show rev"><div class="vis v2"><div class="mock" aria-hidden="true"><h4>Votre comptabilité</h4>
+ <div class="mrow"><span>Déclaration de TVA</span><span class="pill d">Pris en charge</span></div>
+ <div class="mrow"><span>Bilan annuel</span><span class="pill d">Pris en charge</span></div>
+ <div class="mrow"><span>Liasse fiscale</span><span class="pill d">Pris en charge</span></div>
+ <div class="mrow"><span>Factures et justificatifs</span><span class="pill">Vous envoyez</span></div></div></div>
+ <div><h3>Une comptabilité qui suit votre société</h3><p>Notre cabinet d’expertise comptable peut prendre le relais après l’immatriculation. Vous restez concentré sur votre activité.</p><a class="btn alt" href="#/demarrer/creation">Ajouter la comptabilité</a></div></div>
+ <div class="show"><div class="vis v3"><div class="mock" aria-hidden="true"><h4>Que souhaitez-vous modifier ?</h4>
+ <div class="msel on">Transfert de siège</div><div class="msel">Changement de dirigeant</div><div class="msel">Modification des statuts</div><div class="msel">Cession de parts</div><div class="msel">Dissolution</div></div></div>
+ <div><h3>Votre société évolue, vos statuts aussi</h3><p>Transfert de siège, changement de dirigeant, cession de parts, fermeture : les mêmes questions simples et le même suivi que pour une création.</p><a class="btn alt" href="#/demarrer/modification">Modifier ma société</a></div></div></section></div>
+
+ <div class="wrap"><section class="sec" id="plans"><h2>Trois formules, un seul principe</h2>
+ <p class="sub">Plus vous nous confiez, plus nous faisons à votre place.</p>
+ <div class="tabs" role="group" aria-label="Type de démarche">${Object.keys(TYPES).map(k=>`<button data-act="plantab" data-v="${k}" aria-pressed="${S.planTab===k}">${TYPES[k].label}</button>`).join('')}</div>
+ <div class="plans" id="plansBox">${planCards(S.planTab)}</div></section></div>
+
+ <div class="wrap"><section class="sec"><h2>Questions fréquentes</h2><div class="faq">
+ <details><summary>Que comprend la formule à 0 € ?</summary><p>Le questionnaire guidé, vos documents générés et la liste des pièces. Vous déposez ensuite le dossier vous-même et vous payez seulement les frais officiels.</p></details>
+ <details><summary>Que sont les frais officiels ?</summary><p>Ce sont les frais du greffe et de l’annonce légale. Ils sont fixés par l’administration et s’ajoutent à nos honoraires, quelle que soit la plateforme.</p></details>
+ <details><summary>Combien de temps pour obtenir mon Kbis ?</summary><p>Cela dépend du greffe et de la qualité du dossier. Nous vous prévenons à chaque étape, et la formule Express donne la priorité à votre dossier.</p></details>
+ <details><summary>Qui voit mes documents ?</summary><p>Vous, et l’équipe qui traite votre dossier. [Politique de confidentialité à rédiger]</p></details></div></section></div>
+
+ <div class="wrap"><div class="band"><h2>Prêt à lancer votre société ?</h2><a class="btn" href="#/demarrer">Commencer mon dossier ${svgArr}</a></div></div></main>${foot()}`;
+}
+
+function afld(i,k,label,o={}){
+ const a=S.assoc[i];const id=`a${i}${k}`;
+ return `<div class="f"><label for="${id}">${label}</label><input id="${id}" type="${o.type||'text'}" data-ai="${i}" data-ak="${k}" ${o.req===false?'':'data-req'} value="${esc(a[k])}" ${o.attrs||''} placeholder="${esc(o.ph||'')}"><span class="msg" aria-live="polite"></span></div>`;
+}
+function fld(label,name,o={}){
+ const v=D()[name];let inner;
+ if(o.type==='textarea')inner=`<textarea id="f-${name}" rows="3" data-bind="${name}" ${o.req?'data-req':''} placeholder="${esc(o.ph||'')}">${esc(v)}</textarea>`;
+ else if(o.type==='select')inner=`<select id="f-${name}" data-bind="${name}">${o.opts.map(x=>`<option${v===x?' selected':''}>${esc(x)}</option>`).join('')}</select>`;
+ else inner=`<input id="f-${name}" type="${o.type||'text'}" data-bind="${name}" ${o.req?'data-req':''} value="${esc(v)}" placeholder="${esc(o.ph||'')}" ${o.attrs||''}>`;
+ return `<div class="f"><label for="f-${name}">${label}${o.req||o.type==='select'||o.type==='date'&&name==='dateEff'&&S.type==='fermeture'?'':'<span class="facu">facultatif</span>'}</label>${o.hint?`<small>${o.hint}</small>`:''}${inner}<span class="msg" aria-live="polite"></span></div>`;
+}
+const opt=(name,val,title,desc,checked,cls='',extra='')=>`<label class="opt ${cls}"><input type="radio" name="${name}" value="${esc(val)}" data-bind="${name}"${checked?' checked':''}><span><b>${title}</b>${desc?`<em>${desc}</em>`:''}${extra}</span></label>`;
+const chk=(name,text,checked,req)=>`<div class="f chk"><label><input type="checkbox" data-bind="${name}" ${req?'data-req':''}${checked?' checked':''}><span>${text}</span></label><span class="msg" aria-live="polite"></span></div>`;
+function drop(key,title,desc){
+ const names=S.files[key];
+ return `<label class="drop${names?' has':''}" data-drop="${key}">${svgUp}<span><b>${title}</b><em>${names?esc(names):desc}</em></span><input type="file" data-file="${key}" aria-label="${esc(title)}"></label>`;
+}
+
+function stepContent(){
+ const d=D(),k=stepKey(),f=FORMES[S.forme];
+ if(k==='Projet'){
+  return ['Quel est votre projet ?','Choisissez la démarche. Vous pourrez changer d’avis en revenant à cette étape.',
+  `<div class="opts" role="radiogroup" aria-label="Démarche">${Object.keys(TYPES).map(t=>`<label class="opt"><input type="radio" name="type" value="${t}" data-act="settype"${S.type===t?' checked':''}><span><b>${TYPES[t].verb}</b><em>${t==='creation'?'Nouvelle société, de zéro.':t==='modification'?'Une société existante change.':'Dissolution, liquidation, radiation.'}</em></span></label>`).join('')}</div>`+
+  (S.type==='creation'?`<div class="f"><label>Forme juridique</label><div class="chips" role="radiogroup" aria-label="Forme juridique">${Object.keys(FORMES).map(x=>`<label class="chip"><input type="radio" name="forme" value="${x}" data-bind="forme"${S.forme===x?' checked':''}><span>${x}</span></label>`).join('')}</div><p class="hint" id="hint">${f.hint} Pas sûr ? Notre comptable vous conseille.</p></div>`:'')+
+  fld('Quand souhaitez-vous démarrer ?','urgence',{type:'select',opts:['Dès que possible','Dans le mois','Je me renseigne']})];
+ }
+ if(k==='Société'){
+  return ['Parlons de votre société','Ces informations alimentent vos statuts, que vous voyez se remplir.',
+  fld('Nom de la société','nom',{req:1,ph:'Ex. : Studio Alba'})+
+  fld('Nom commercial','nomc',{hint:'S’il diffère du nom de la société.'})+
+  fld('Que fera votre société ?','activite',{type:'textarea',req:1,ph:'Ex. : conception de sites web pour les petites entreprises',hint:'Une phrase suffit, nous la mettrons en forme.'})+
+  fld('Capital social (€)','capital',{type:'number',req:1,attrs:'min="1" inputmode="numeric"',hint:'Le capital est déposé avant l’immatriculation. Nous vous aidons à ouvrir le compte.'})+
+  `<div class="f"><label>Où sera le siège ?</label></div><div class="opts">${opt('siege','dirigeant','Chez le dirigeant','Votre domicile, si le bail ou la copropriété l’autorise.',d.siege==='dirigeant')}${opt('siege','local','Dans un local','Bureau, boutique ou local commercial.',d.siege==='local')}${opt('siege','domiciliation','Chez un domiciliataire','Nous vous proposons une adresse à l’étape finale.',d.siege==='domiciliation')}</div>`+
+  (d.siege==='domiciliation'?'':fld('Adresse du siège','adresse',{req:1,ph:'12 rue des Lilas, 75011 Paris'}))+
+  `<div class="g2">${fld('Clôture du premier exercice','cloture',{type:'select',opts:['31 décembre','30 juin','31 mars','30 septembre']})}${fld('Impôt','fisc',{type:'select',opts:['Impôt sur les sociétés (par défaut)','Impôt sur le revenu (sur option)','Je ne sais pas, conseillez-moi']})}</div>`+
+  fld('TVA','tva',{type:'select',opts:['Franchise en base de TVA','Régime réel simplifié','Régime réel normal','Je ne sais pas, conseillez-moi']})];
+ }
+ if(k==='Associés'){
+  const min=f.uni?1:2;
+  return [f.uni?'Qui est l’associé unique ?':'Qui sont les associés ?',f.uni?`Une ${S.forme} n’a qu’un seul associé.`:`Une ${S.forme} compte au moins deux associés.`,
+  S.assoc.map((a,i)=>`<div class="cardx"><h3>Associé ${i+1}${S.assoc.length>min?`<button type="button" data-act="rmassoc" data-i="${i}">Retirer</button>`:''}</h3>
+  <div class="g2">${afld(i,'prenom','Prénom')}${afld(i,'nom','Nom')}${afld(i,'naiss','Date de naissance',{type:'date'})}${afld(i,'nat','Nationalité')}</div>
+  ${afld(i,'adresse','Adresse personnelle',{req:false,ph:'Rue, code postal, ville'})}
+  ${afld(i,'apport','Apport en numéraire (€)',{type:'number',attrs:'min="1" inputmode="numeric"'})}<p class="msg" style="margin:-10px 0 14px;color:var(--ink2);font-size:14px" data-pct="${i}"></p></div>`).join('')+
+  (f.uni?'':'<button type="button" class="btn alt" data-act="addassoc">Ajouter un associé</button>')+
+  '<div id="apports" class="sumline" style="margin-top:16px"></div>'];
+ }
+ if(k==='Dirigeant'){
+  return [`Qui sera ${f.dir.toLowerCase()} ?`,'La personne qui représente la société et signe en son nom.',
+  fld('Dirigeant','dirIdx',{type:'select',opts:[]}).replace('<select id="f-dirIdx" data-bind="dirIdx"></select>',`<select id="f-dirIdx" data-bind="dirIdx">${S.assoc.map((a,i)=>`<option value="${i}"${d.dirIdx==i?' selected':''}>${esc((a.prenom+' '+a.nom).trim()||'Associé '+(i+1))}</option>`).join('')}<option value="x"${d.dirIdx==='x'?' selected':''}>Une autre personne</option></select>`)+
+  (d.dirIdx==='x'?fld('Nom complet du dirigeant','dirNom',{req:1}):'')+
+  fld('Durée du mandat','mandat',{type:'select',opts:['Durée illimitée','3 ans','6 ans']})+
+  chk('nonCond','Je déclare sur l’honneur n’avoir fait l’objet d’aucune condamnation m’interdisant de diriger une société. Vous signerez vos statuts en ligne à l’étape suivante.',d.nonCond,true)+
+  '<p class="sub" style="margin-top:0">Les bénéficiaires effectifs sont déclarés automatiquement à partir de vos associés.</p>'];
+ }
+ if(k==='Votre société'){
+  return ['Quelle société est concernée ?','Retrouvez ces informations sur votre extrait Kbis.',
+  `<div class="g2">${fld('SIREN','siren',{req:1,ph:'9 chiffres',attrs:'inputmode="numeric" maxlength="9"'})}${fld('Nom de la société','nom',{req:1})}</div>`+
+  fld('Forme juridique','forme2',{type:'select',opts:Object.keys(FORMES)})+
+  (S.type==='modification'?fld('Que souhaitez-vous changer ?','nature',{type:'select',opts:['Transfert de siège','Changement de dirigeant','Modification des statuts','Cession de parts','Changement d’activité','Autre']})+fld('Détails','details',{type:'textarea',req:1,ph:'Ex. : le siège passe au 8 avenue Victor Hugo, 69003 Lyon'})+fld('Date souhaitée','dateEff',{type:'date',hint:'Laissez vide si vous n’avez pas de date précise.'}):
+  fld('Motif de la fermeture','motif',{type:'select',opts:['Cessation d’activité','Décision des associés','Fin de la durée statutaire','Autre']})+fld('Date d’effet souhaitée','dateEff',{type:'date',req:1}))];
+ }
+ if(k==='Pièces'){
+  if(S.type==='creation'){
+   return ['Vos pièces','Photo ou scan, lisible, en PDF, JPG ou PNG.',
+   S.assoc.map((a,i)=>drop('id'+i,`Pièce d’identité de ${(a.prenom+' '+a.nom).trim()||'l’associé '+(i+1)}`,'Passeport ou carte d’identité')).join('')+
+   drop('siege','Justificatif du siège','Facture récente, bail ou contrat de domiciliation')+
+   `<div class="drop" style="cursor:default;border-style:solid;border-color:var(--line)"><span style="display:block"><b>Attestation de dépôt du capital</b><em>Nous vous guidons après l’envoi, pas besoin de l’avoir maintenant.</em></span></div>`+
+   chk('later','J’ajouterai les pièces manquantes plus tard',d.later,false)];
+  }
+  return ['Vos pièces','Photo ou scan, lisible, en PDF, JPG ou PNG.',
+  drop('kbis','Extrait Kbis de moins de 3 mois','Disponible gratuitement sur le site officiel')+drop('idd','Pièce d’identité du dirigeant','Passeport ou carte d’identité')+drop('statuts','Statuts à jour','La dernière version signée')+
+  chk('later','J’ajouterai les pièces manquantes plus tard',d.later,false)];
+ }
+ return ['Choisissez votre formule','Plus vous nous confiez, plus nous faisons à votre place.',
+ `<div class="opts" role="radiogroup" aria-label="Formule">${PLANS.map((p,i)=>opt('plan',String(i),p.n,p.f.filter(x=>!x.endsWith(':')).slice(0,2).join(' · '),String(d.plan)===String(i),p.rec?'rec':'',`<span class="pp">${PRIX[S.type][i]===0?'0 €':PRIX[S.type][i]+' €'}</span>`)).join('')}</div>`+
+ `<div class="f"><label>Options</label></div><div class="opts">${OPTS.map(o=>`<label class="opt"><input type="checkbox" data-bind="opt.${o.k}"${S.opts[o.k]?' checked':''}><span><b>${o.n}</b><em>${o.p}</em></span></label>`).join('')}</div>`+
+ `<div class="g2">${fld('Votre nom complet','contact',{req:1})}${fld('Téléphone','tel',{type:'tel',ph:'06 12 34 56 78'})}</div>`+fld('E-mail','email',{type:'email',req:1,hint:'Nous y envoyons la confirmation et chaque mise à jour.'})+
+ `<div class="recap" id="recap">${recapHTML()}</div>`+
+ '<div style="height:16px"></div>'+chk('consent','J’accepte que Fondée traite mon dossier et me contacte à ce sujet. [Conditions et confidentialité à rédiger]',d.consent,true)];
+}
+
+function formView(){
+ const steps=TYPES[S.type].steps,k=stepKey();
+ const [title,sub,body]=stepContent();
+ const last=S.step===steps.length-1;
+ const docPanel=`<div class="sheet"><div class="paper docv">${docHTML()}</div></div>`;
+ return `<main><div class="wrap"><div class="flow"><div class="fpanel">
+ <div class="stepbar" role="list" aria-label="Étapes">${steps.map((s,i)=>`<div class="st${i===S.step?' on':i<S.step?' done':''}" role="listitem" title="${s}"${i===S.step?' aria-current="step"':''}><i>${i<S.step?'✓':i+1}</i><span>${s}</span></div>`).join('')}</div>
+ <div class="meter" aria-hidden="true"><div id="meterBar" style="width:${pct()}%"></div></div>
+ <div class="mt"><span id="pct">${pct()} % du dossier rempli</span><button type="button" data-act="sample">Remplir pour tester</button></div>
+ <h1>${title}</h1><p class="sub">${sub}</p>
+ <div class="fbody">${body}</div><div class="stepErr" id="stepErr" role="alert"></div>
+ <details class="peek" style="margin-top:20px"><summary>Voir mon dossier</summary>${docPanel}</details>
+ <div class="actions">${S.step>0?'<button type="button" class="btn alt" data-act="back">Retour</button>':`<a class="btn alt" href="#/demarrer/${S.type}">Retour</a>`}
+ <button type="button" class="btn" data-act="${last?'submit':'next'}">${last?'Envoyer mon dossier':'Continuer'} ${svgArr}</button></div>
+ </div><aside class="aside" aria-label="Aperçu du dossier"><h4>Votre dossier, en direct</h4>${docPanel}</aside></div></div></main>`;
+}
+
+function mailsHTML(d){
+ const lbl=TYPES[d.type].label.toLowerCase();
+ const prenom=d.client.split(' ')[0];
+ return `<div class="mails"><div><p class="mailcap">E-mail reçu par le client</p><div class="mail"><div class="mh"><b>De :</b> Fondée &lt;dossiers@fondee.example&gt;<br><b>À :</b> ${esc(d.email)}<br><b>Objet :</b> Nous avons bien reçu votre demande, dossier ${d.ref}</div>
+ <div class="mb"><p>Bonjour ${esc(prenom)},</p><p>Merci, nous avons bien reçu votre demande de ${lbl} pour <b>${esc(d.societe)}</b>. Notre équipe s’en occupe tout de suite.</p><p>Vous pouvez suivre l’avancement à tout moment avec votre code dossier <b>${d.ref}</b>.</p><a class="btn sm" href="#/suivi" data-act="trackme">Suivre mon dossier</a></div></div></div>
+ <div><p class="mailcap">Notification reçue par l’équipe</p><div class="mail"><div class="mh"><b>De :</b> Fondée &lt;automate@fondee.example&gt;<br><b>À :</b> cabinet@fondee.example<br><b>Objet :</b> Nouveau dossier, ${esc(d.societe)} (${d.forme})</div>
+ <div class="mb"><p>Un client vient de remplir un dossier.</p><table><tr><td>Client</td><td>${esc(d.client)}</td></tr><tr><td>Démarche</td><td>${d.nature}, ${d.forme}</td></tr><tr><td>Formule</td><td>${PLANS[d.plan].n}</td></tr><tr><td>Pièces</td><td>${d.blocked?'À compléter : '+esc(d.missing):'Complètes'}</td></tr></table><a class="btn sm" href="#/cabinet">Ouvrir dans l’espace cabinet</a></div></div></div></div>`;
+}
+function doneView(){
+ const d=S.dossiers.find(x=>x.ref===S.last)||S.dossiers[0];
+ return `<main><div class="wrap"><section class="done"><h1>Merci, c’est reçu.</h1>
+ <p class="lead" style="font-size:18px;color:var(--ink2);margin-top:18px;max-width:48ch">Notre équipe s’en occupe tout de suite. Deux e-mails viennent de partir automatiquement.</p>
+ <span class="ref">Code dossier ${d.ref}</span>
+ ${mailsHTML(d)}
+ <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:32px"><a class="btn" href="#/suivi" data-act="trackme">Suivre mon dossier ${svgArr}</a><a class="btn alt" href="#/cabinet">Voir côté cabinet</a></div></section></div></main>${foot()}`;
+}
+
+function timeline(d){
+ return `<ol class="tl">${STEPS.map((s,i)=>{
+  const ok=i<d.step||(i===4&&d.step===4),now=i===d.step&&d.step<4;
+  const cls=ok?'ok':now?(d.blocked?'now block':'now'):'wait';
+  const t=d.log.find(l=>l.x===stepLabel(d,i));
+  return `<li class="${cls}"><b>${esc(stepLabel(d,i))}</b><span>${now&&d.blocked?'En pause : une pièce est attendue.':ok&&t?esc(t.t):i===d.step&&d.step===4?'Terminé.':esc(i===4?(d.type==='creation'?'Votre société existe officiellement.':'Dernière étape.'):s.d)}</span></li>`}).join('')}</ol>`;
+}
+function trackView(){
+ const L=S.lookup,d=S.dossiers.find(x=>x.ref===L.found);
+ return `<main><div class="wrap"><section class="track"><h1>Où en est mon dossier ?</h1>
+ <p class="sub" style="color:var(--ink2);margin-top:12px">Code reçu par e-mail et adresse utilisée pour la demande. Démo : champs déjà remplis.</p>
+ <form class="lookup" data-form="lookup"><div class="f"><label for="lref">Code dossier</label><input id="lref" name="ref" value="${esc(L.ref)}" autocomplete="off"></div><div class="f"><label for="lmail">E-mail</label><input id="lmail" name="email" type="email" value="${esc(L.email)}"></div><button class="btn" type="submit">Voir mon dossier</button></form>
+ ${L.err?`<p class="stepErr">${L.err}</p>`:''}
+ ${d?`<div class="case"><div class="card">${d.step===4?`<div class="stamp" aria-label="${endLabel(d.type)}">${endLabel(d.type)}</div>`:''}<h2>${esc(d.societe)}</h2><p class="meta">${d.forme} · ${d.nature} · formule ${PLANS[d.plan].n} · ${d.ref}</p>
+ ${d.blocked?`<div class="alert" role="status"><b>Action requise</b>Il nous manque : ${esc(d.missing)}.<br><label class="btn sm" style="cursor:pointer">Envoyer la pièce<input type="file" data-act="sendpiece" data-ref="${d.ref}" style="position:absolute;opacity:0;width:1px;height:1px"></label></div>`:''}
+ ${timeline(d)}</div>
+ <div><div class="card"><h2 style="font-size:22px">Messages de l’équipe</h2><div class="msgs">${d.log.slice().reverse().map(l=>`<p>${esc(l.x)}<small>${esc(l.t)} · ${esc(l.m)}</small></p>`).join('')}</div></div></div></div>`:L.err?'':`<div class="empty">Saisissez votre code dossier pour afficher l’avancement.</div>`}
+ </section></div></main>${foot()}`;
+}
+
+function adminView(){
+ const ds=S.dossiers,n=f=>ds.filter(f).length;
+ const label=d=>d.blocked?'Pièces à compléter':stepLabel(d,d.step);
+ const cls=d=>d.blocked?'b':d.step===4?'d':'';
+ return `<main><div class="wrap"><section class="admin"><h1>Espace cabinet</h1>
+ <span class="demo">Démo sans connexion. En production : accès sécurisé pour le comptable.</span>
+ <div class="kpis"><div class="kpi"><b>${n(d=>d.step===0&&!d.blocked)}</b><span>Nouveaux dossiers</span></div><div class="kpi"><b>${n(d=>d.step>0&&d.step<4&&!d.blocked)}</b><span>En cours</span></div><div class="kpi red"><b>${n(d=>d.blocked)}</b><span>Pièces à compléter</span></div><div class="kpi"><b>${n(d=>d.step===4)}</b><span>Terminés</span></div></div>
+ <div class="alay"><table class="tbl"><thead><tr><th>Société</th><th>Démarche</th><th>Formule</th><th>Statut</th><th>Reçu le</th></tr></thead><tbody>
+ ${ds.map(d=>`<tr><td data-l="Société"><button class="rw" data-act="open" data-ref="${d.ref}">${esc(d.societe)}</button><br><small style="color:var(--ink2)">${esc(d.client)} · ${d.ref}</small></td><td data-l="Démarche">${d.nature}</td><td data-l="Formule">${PLANS[d.plan].n}</td><td data-l="Statut"><span class="pill ${cls(d)}">${esc(label(d))}</span></td><td data-l="Reçu le">${esc(d.created.trim())}</td></tr>`).join('')}</tbody></table>
+ <aside class="auto"><h3>Automatisations</h3><p class="s">Ce que le système fait sans vous.</p>
+ ${[['confirm','E-mail de confirmation au client'],['notify','Notification à l’équipe à chaque nouveau dossier'],['relance','Relance des pièces manquantes tous les 2 jours'],['statuts','Génération des statuts en PDF']].map(a=>`<label class="tg"><input type="checkbox" data-auto="${a[0]}"${S.autos[a[0]]?' checked':''}><span>${a[1]}</span></label>`).join('')}</aside></div></section></div>
+ ${S.open?drawer(ds.find(x=>x.ref===S.open)):''}</main>${foot()}`;
+}
+function drawer(d){
+ return `<div class="drawer" data-act="closeBg"><div class="dpan" role="dialog" aria-modal="true" aria-label="Dossier ${esc(d.societe)}"><button class="x" data-act="close" aria-label="Fermer">×</button>
+ <h2>${esc(d.societe)}</h2><p class="meta" style="color:var(--ink2)">${d.ref} · ${d.forme} · ${d.nature}</p>
+ <h3>Client</h3><dl class="kv"><dt>Nom</dt><dd>${esc(d.client)}</dd><dt>E-mail</dt><dd>${esc(d.email)}</dd><dt>Formule</dt><dd>${PLANS[d.plan].n}</dd><dt>Statut</dt><dd>${d.blocked?'Pièces à compléter : '+esc(d.missing):esc(stepLabel(d,d.step))}</dd></dl>
+ <h3>Actions</h3><div class="acts">
+ ${d.step<4&&!d.blocked?`<button class="btn sm" data-act="advance" data-ref="${d.ref}">Passer à « ${esc(stepLabel(d,d.step+1))} »</button>`:''}
+ ${d.blocked?`<button class="btn sm" data-act="receive" data-ref="${d.ref}">Pièce reçue</button>`:d.step<4?`<select id="pieceSel" aria-label="Pièce à demander">${PIECES.map(p=>`<option>${p}</option>`).join('')}</select><button class="btn sm alt" data-act="request" data-ref="${d.ref}">Demander la pièce</button>`:''}
+ </div><h3>Journal</h3><ul class="log">${d.log.slice().reverse().map(l=>`<li>${esc(l.x)}<small>${esc(l.t)} · ${esc(l.m)}</small></li>`).join('')}</ul></div></div>`;
+}
+
+function toast(m){const t=document.createElement('div');t.className='toast';t.setAttribute('role','status');t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2600)}
+function render(){
+ const root=$('#root');
+ const v=S.view;
+ root.innerHTML=head()+(v==='home'?homeView():v==='intro'?introView():v==='form'?formView():v==='done'?doneView():v==='track'?trackView():adminView());
+ if(v==='form'){updateApports()}
+ if(v==='home')ghost();else{clearInterval(ghT);S.ghost=''}
+}
+function route(){
+ const p=location.hash.replace(/^#\/?/,'').split('/');
+ const v=p[0]||'home';
+ if(v==='demarrer'){S.view='intro';if(p[1]&&TYPES[p[1]]&&S.type!==p[1]){S.type=p[1];S.step=0;S.seen={}}}
+ else if(v==='questionnaire'){S.view='form';if(p[1]&&TYPES[p[1]]&&S.type!==p[1]){S.type=p[1];S.step=0}if(S.step>=TYPES[S.type].steps.length)S.step=0}
+ else if(v==='merci')S.view='done';
+ else if(v==='suivi')S.view='track';
+ else if(v==='cabinet')S.view='admin';
+ else S.view='home';
+ render();window.scrollTo(0,0);
+}
+function validate(){
+ let ok=true,first=null;
+ $$('[data-req]').forEach(el=>{
+  const empty=el.type==='checkbox'?!el.checked:!String(el.value).trim();
+  const f=el.closest('.f');
+  if(empty){ok=false;f.classList.add('err');f.querySelector('.msg').textContent=el.type==='checkbox'?'Cochez cette case pour continuer.':'Ce champ est requis.';first=first||el}
+ });
+ const k=stepKey(),d=D();
+ const err=m=>{$('#stepErr').textContent=m;ok=false};
+ $('#stepErr').textContent='';
+ if(ok&&k==='Associés'){if(apportSum()!==(+d.capital||0))err('Le total des apports doit être égal au capital.')}
+ if(ok&&k==='Votre société'&&!/^\d{9}$/.test(d.siren)){const f=$('#f-siren').closest('.f');f.classList.add('err');f.querySelector('.msg').textContent='Le SIREN compte 9 chiffres.';first=$('#f-siren');ok=false}
+ if(ok&&k==='Pièces'&&!d.later){const need=S.type==='creation'?[...S.assoc.map((a,i)=>'id'+i),'siege']:['kbis','idd','statuts'];if(need.some(x=>!S.files[x]))err('Ajoutez les pièces ou cochez la case pour les envoyer plus tard.')}
+ if(ok&&k==='Formule'&&!/.+@.+\..+/.test(d.email)){const f=$('#f-email').closest('.f');f.classList.add('err');f.querySelector('.msg').textContent='Saisissez une adresse e-mail valide.';first=$('#f-email');ok=false}
+ if(first){first.scrollIntoView({block:'center',behavior:'smooth'});first.focus({preventScroll:true})}
+ return ok;
+}
+function sample(){
+ const d=D();
+ if(S.type==='creation'){
+  Object.assign(d,{nom:'Studio Alba',activite:'conception de sites web et d’identités visuelles pour les petites entreprises',capital:'2000',siege:'dirigeant',adresse:'12 rue des Lilas, 75011 Paris',dirIdx:'0',nonCond:true,contact:'Léa Marchand',email:'lea.marchand@example.com',tel:'06 12 34 56 78',consent:true,later:true});
+  const f=FORMES[S.forme];
+  S.assoc=f.uni?[{prenom:'Léa',nom:'Marchand',naiss:'1991-04-12',nat:'Française',adresse:'12 rue des Lilas, 75011 Paris',apport:'2000'}]:[{prenom:'Léa',nom:'Marchand',naiss:'1991-04-12',nat:'Française',adresse:'12 rue des Lilas, 75011 Paris',apport:'1200'},{prenom:'Karim',nom:'Benali',naiss:'1988-09-30',nat:'Française',adresse:'4 rue Paradis, 13001 Marseille',apport:'800'}];
+ }else{
+  Object.assign(d,{siren:'552100554',nom:'Garrigue Logistique',details:'Le siège passe au 8 avenue Victor Hugo, 69003 Lyon',dateEff:'2026-12-01',contact:'Yann Roux',email:'yann.roux@example.com',consent:true,later:true});
+ }
+ render();
+}
+function submit(){
+ if(!validate())return;
+ const d=D(),n=S.dossiers.length+140;
+ const t=new Date('2026-11-02T21:45:00');
+ const nature=S.type==='creation'?'Création':S.type==='modification'?d.nature:'Fermeture';
+ const missing=d.later?(S.type==='creation'?'Pièces d’identité et justificatif du siège':'Pièces du dossier'):'';
+ const rec={ref:'FD-2611-0'+n,client:d.contact,email:d.email,societe:d.nom||'Société sans nom',forme:S.type==='creation'?S.forme:d.forme2,type:S.type,plan:+d.plan,step:0,blocked:!!d.later,missing,created:'2 nov. 2026',nature,opts:{...S.opts},log:[{t:'2 nov. 2026',x:'Dossier reçu',m:'E-mail de confirmation envoyé au client et notification envoyée à l’équipe'}]};
+ S.dossiers.unshift(rec);S.last=rec.ref;S.lookup={ref:rec.ref,email:rec.email,found:rec.ref};
+ S.data=fresh();S.assoc=[emptyA()];S.opts={dom:false,marque:false,compta:false};S.files={};S.seen={};S.step=0;
+ location.hash='#/merci';
+}
+const GH=['Studio Alba','Maison Nour','Atelier Pivoine','Cèdre Conseil','Lumen Studio'];
+let ghI=0,ghT=null;
+function ghost(){
+ clearInterval(ghT);S.ghost='';
+ if(matchMedia('(prefers-reduced-motion: reduce)').matches||D().nom.trim())return;
+ const tick=()=>{
+  if(S.view!=='home'||D().nom.trim()){clearInterval(ghT);S.ghost='';return}
+  S.ghost=GH[ghI++%GH.length];S.seen.n0=false;updateDoc();
+  const h=$('#heroName');if(h)h.placeholder=S.ghost;
+ };
+ tick();ghT=setInterval(tick,2800);
+}
+function introView(){
+ const t=S.type,f=FORMES[S.forme];
+ const need={
+  creation:['Une pièce d’identité par associé','L’adresse du siège, ou l’envie d’être domicilié','Le capital que vous visez, 1 € au minimum'],
+  modification:['Le SIREN de votre société','Un extrait Kbis de moins de 3 mois','La pièce d’identité du dirigeant'],
+  fermeture:['Le SIREN de votre société','Un extrait Kbis de moins de 3 mois','La date à laquelle la société doit s’arrêter']
+ }[t];
+ return `<main><div class="wrap"><section class="intro"><div class="introL">
+ <h1>Parlons de votre projet</h1>
+ <p class="lead">Quelques questions, environ dix minutes. Un expert-comptable relit ensuite votre dossier avant tout dépôt.</p>
+ <div class="opts" role="radiogroup" aria-label="Démarche">${Object.keys(TYPES).map(k=>`<label class="opt"><input type="radio" name="type" value="${k}" data-act="settype"${t===k?' checked':''}><span><b>${TYPES[k].verb}</b><em>${k==='creation'?'Nouvelle société, de zéro.':k==='modification'?'Une société existante change.':'Dissolution, liquidation, radiation.'}</em></span></label>`).join('')}</div>
+ ${t==='creation'?`<div class="f" style="margin-bottom:0"><label>Forme juridique</label></div><div class="chips" role="radiogroup" aria-label="Forme juridique" style="margin-top:6px">${Object.keys(FORMES).map(x=>`<label class="chip"><input type="radio" name="forme" value="${x}" data-bind="forme"${S.forme===x?' checked':''}><span>${x}</span></label>`).join('')}</div><p class="hint" id="hint">${f.hint} Pas sûr ? Notre comptable vous conseille.</p>`:''}
+ ${fld('Quand souhaitez-vous démarrer ?','urgence',{type:'select',opts:['Dès que possible','Dans le mois','Je me renseigne']})}
+ <a class="btn big" data-act="start" href="#/questionnaire/${t}">Commencer le questionnaire ${svgArr}</a>
+ </div>
+ <aside class="introR" aria-label="Avant de commencer"><div><h2>Avant de commencer</h2><h3 style="margin-top:18px">À avoir sous la main</h3><ul class="ck">${need.map(x=>`<li>${x}</li>`).join('')}</ul><p class="note" style="margin-top:14px">Il vous manque quelque chose ? Vous pourrez l’ajouter plus tard.</p></div><hr>
+ <div><h3>Ensuite</h3><ul class="ck"><li>Un e-mail de confirmation arrive tout de suite</li><li>Un expert-comptable relit votre dossier</li><li>Vous suivez chaque étape en ligne</li></ul></div></aside></section></div></main>${foot()}`;
+}
+const root=document.getElementById('root');
+root.addEventListener('click',e=>{
+ const pl=e.target.closest('[data-plan]');
+ if(pl)D().plan=pl.dataset.plan;
+ const t=e.target.closest('[data-act]');
+ if(!t)return;
+ const a=t.dataset.act;
+ if(a==='start'){S.step=0;S.seen={};return}
+ if(a==='settype'){S.type=t.value;S.step=0;S.seen={};render();return}
+ if(a==='goto'){const go=()=>{const el=document.getElementById(t.dataset.to);if(el)el.scrollIntoView({behavior:'smooth'})};if(S.view!=='home'){location.hash='#/';setTimeout(go,60)}else go();return}
+ if(a==='plantab'){S.planTab=t.dataset.v;$('#plansBox').innerHTML=planCards(S.planTab);$$('.tabs button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===S.planTab)));return}
+ if(a==='next'){if(validate()){S.step++;render();window.scrollTo(0,0)}return}
+ if(a==='back'){S.step=Math.max(0,S.step-1);render();window.scrollTo(0,0);return}
+ if(a==='addassoc'){S.assoc.push(emptyA());render();return}
+ if(a==='rmassoc'){S.assoc.splice(+t.dataset.i,1);if(+D().dirIdx>=S.assoc.length)D().dirIdx='0';render();return}
+ if(a==='sample'){sample();return}
+ if(a==='submit'){submit();return}
+ if(a==='trackme'){const d=S.dossiers.find(x=>x.ref===S.last);if(d)S.lookup={ref:d.ref,email:d.email,found:d.ref};return}
+ if(a==='open'){S.open=t.dataset.ref;render();return}
+ if(a==='close'){S.open=null;render();return}
+ if(a==='closeBg'){if(e.target===t){S.open=null;render()}return}
+ const d=S.dossiers.find(x=>x.ref===t.dataset.ref);
+ if(a==='advance'&&d){d.step++;d.log.push({t:'2 nov. 2026',x:stepLabel(d,d.step),m:'E-mail de statut envoyé automatiquement au client'});render();toast('Statut mis à jour, e-mail envoyé au client');return}
+ if(a==='request'&&d){const p=$('#pieceSel').value;d.blocked=true;d.missing=p;d.log.push({t:'2 nov. 2026',x:'Pièce demandée',m:'E-mail envoyé au client : '+p+'. Relance automatique tous les 2 jours'});render();toast('Demande envoyée au client');return}
+ if(a==='receive'&&d){d.blocked=false;d.missing='';d.log.push({t:'2 nov. 2026',x:'Pièce reçue',m:'Le dossier reprend son cours'});render();toast('Dossier débloqué');return}
+});
+function onField(e){
+ const t=e.target;
+ if(t.dataset.ai!==undefined){S.assoc[+t.dataset.ai][t.dataset.ak]=t.value;t.closest('.f').classList.remove('err');updateDoc();updateProg();updateApports();return}
+ if(t.dataset.act==='settype')return;
+ if(t.type==='file'&&t.dataset.file){S.files[t.dataset.file]=[...t.files].map(f=>f.name).join(', ');const l=t.closest('.drop');l.classList.add('has');l.querySelector('em').textContent=S.files[t.dataset.file];$('#stepErr')&&($('#stepErr').textContent='');return}
+ if(t.dataset.auto){S.autos[t.dataset.auto]=t.checked;toast(t.checked?'Automatisation activée':'Automatisation désactivée');return}
+ const k=t.dataset.bind;if(!k)return;
+ const v=t.type==='checkbox'?t.checked:t.value;
+ if(k==='forme'){S.forme=v;const h=$('#hint');if(h)h.textContent=FORMES[v].hint+(S.view==='form'?' Pas sûr ? Notre comptable vous conseille.':'');S.assoc=FORMES[v].uni?S.assoc.slice(0,1):(S.assoc.length<2?[...S.assoc,emptyA()]:S.assoc);S.seen.a4b=false}
+ else if(k.startsWith('opt.')){S.opts[k.slice(4)]=v;updateRecap()}
+ else{S.data[k]=v;if(k==='nom')S.ghost=''}
+ const f=t.closest('.f');if(f){f.classList.remove('err');const m=f.querySelector('.msg');if(m)m.textContent=''}
+ if(k==='siege'||k==='dirIdx'&&false){render();return}
+ if(k==='dirIdx'&&(v==='x'||S.data.dirNom)){render();return}
+ updateDoc();updateProg();if(k==='plan')updateRecap();if(k==='capital')updateApports();
+}
+root.addEventListener('input',onField);
+root.addEventListener('change',e=>{
+ if(e.target.type==='file'&&e.target.dataset.act==='sendpiece'){const d=S.dossiers.find(x=>x.ref===e.target.dataset.ref);d.blocked=false;d.log.push({t:'2 nov. 2026',x:'Pièce reçue',m:'Envoyée par le client : '+(e.target.files[0]?.name||'document')});d.missing='';render();toast('Merci, pièce envoyée');return}
+ if(e.target.type==='radio'||e.target.tagName==='SELECT'||e.target.type==='file'||e.target.type==='checkbox')onField(e);
+});
+root.addEventListener('submit',e=>{
+ if(e.target.dataset.form==='lookup'){
+  e.preventDefault();
+  const fd=new FormData(e.target),ref=String(fd.get('ref')).trim().toUpperCase(),em=String(fd.get('email')).trim().toLowerCase();
+  const d=S.dossiers.find(x=>x.ref===ref&&x.email.toLowerCase()===em);
+  S.lookup={ref,email:em,found:d?d.ref:null,err:d?'':'Aucun dossier ne correspond à ce code et à cet e-mail. Vérifiez votre message de confirmation.'};
+  render();
+ }
+});
+window.addEventListener('hashchange',route);
+route();
+</script>
+</body>
+</html>
