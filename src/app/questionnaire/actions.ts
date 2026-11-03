@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import type { Associe, DraftData } from "@/lib/questionnaire";
+import { piecesNeeded, type Associe, type DraftData } from "@/lib/questionnaire";
 import type { FormeKey, TypeKey } from "@/lib/data";
 
 type DossierPayload = {
@@ -153,6 +153,22 @@ export async function submitDossier(input: SubmitDossierInput): Promise<SubmitDo
       if (associesError) {
         return { ok: false, needsAuth: false, message: associesError.message };
       }
+    }
+  }
+
+  // Idem pour les pièces à demander : on repart de zéro pour refléter la
+  // liste à jour (ex. un associé ajouté ou retiré depuis un essai précédent).
+  const { error: deletePiecesError } = await supabase.from("pieces").delete().eq("dossier_id", dossier.id);
+  if (deletePiecesError) {
+    return { ok: false, needsAuth: false, message: deletePiecesError.message };
+  }
+  const needed = piecesNeeded(type, associes);
+  if (needed.length > 0) {
+    const { error: piecesError } = await supabase.from("pieces").insert(
+      needed.map((p) => ({ dossier_id: dossier.id, kind: p.kind }))
+    );
+    if (piecesError) {
+      return { ok: false, needsAuth: false, message: piecesError.message };
     }
   }
 

@@ -74,6 +74,42 @@ export function freshDraft(): DraftData {
   };
 }
 
+export type PieceNeeded = { kind: string; label: string };
+
+/** Pièces à demander au client une fois son dossier reçu (Phase 4). */
+export function piecesNeeded(type: TypeKey, associes: Associe[]): PieceNeeded[] {
+  if (type === "creation") {
+    return [
+      ...associes.map((a, i) => ({
+        kind: `identite_associe_${i}`,
+        label: `Pièce d'identité de ${(a.prenom + " " + a.nom).trim() || `l'associé ${i + 1}`}`,
+      })),
+      { kind: "justificatif_siege", label: "Justificatif du siège" },
+    ];
+  }
+  return [
+    { kind: "kbis", label: "Extrait Kbis de moins de 3 mois" },
+    { kind: "identite_dirigeant", label: "Pièce d'identité du dirigeant" },
+    { kind: "statuts", label: "Statuts à jour" },
+  ];
+}
+
+const KNOWN_PIECE_LABELS: Record<string, string> = {
+  justificatif_siege: "Justificatif du siège",
+  kbis: "Extrait Kbis de moins de 3 mois",
+  identite_dirigeant: "Pièce d'identité du dirigeant",
+  statuts: "Statuts à jour",
+};
+
+/** Libellé lisible pour une pièce déjà enregistrée en base (colonne `kind`). */
+export function pieceLabel(kind: string): string {
+  if (kind.startsWith("identite_associe_")) {
+    const n = Number(kind.slice("identite_associe_".length)) + 1;
+    return Number.isFinite(n) ? `Pièce d'identité — associé ${n}` : kind;
+  }
+  return KNOWN_PIECE_LABELS[kind] ?? kind;
+}
+
 export function recapLines(type: TypeKey, data: DraftData): { label: string; value: string }[] {
   const plan = Number(data.plan) || 0;
   const base = PRIX[type][plan];
