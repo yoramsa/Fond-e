@@ -1,17 +1,23 @@
 {
-  "name": "fondee-scaffold",
+  "name": "fondee",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:migrate": "supabase db push --remote=\"$SUPABASE_DB_URL\" --yes",
+    "db:migrate:dry-run": "supabase db push --remote=\"$SUPABASE_DB_URL\" --dry-run",
+    "db:seed:cabinet": "node scripts/seed-cabinet-admin.mjs"
   },
   "dependencies": {
+    "@supabase/ssr": "^0.12.7",
+    "@supabase/supabase-js": "^2.118.0",
     "next": "16.4.4",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "server-only": "^0.0.1"
   },
   "devDependencies": {
     "@types/node": "^20",
@@ -19,6 +25,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.4.4",
+    "supabase": "^3.0.0",
     "typescript": "^5"
   }
 }
