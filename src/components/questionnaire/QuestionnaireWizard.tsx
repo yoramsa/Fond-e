@@ -97,8 +97,7 @@ export default function QuestionnaireWizard({ type }: { type: TypeKey }) {
   const steps = TYPES[type].steps;
   const [draft, setDraft] = useState<QuestionnaireDraft>(() => freshQuestionnaire());
   const [error, setError] = useState<string | null>(null);
-  const [status, setStatus] = useState<"idle" | "sent" | "submitting" | "error">("idle");
-  const [code, setCode] = useState("");
+  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "submitting" | "error">("idle");
   const [isAuthed, setIsAuthed] = useState(false);
   const loaded = useRef(false);
 
@@ -212,74 +211,31 @@ export default function QuestionnaireWizard({ type }: { type: TypeKey }) {
       return;
     }
 
-    const { error: otpError } = await supabase.auth.signInWithOtp({ email: data.email });
+    const { error: otpError } = await supabase.auth.signInWithOtp({
+      email: data.email,
+      options: { emailRedirectTo: `${window.location.origin}/auth/callback?next=/mon-dossier` },
+    });
     if (otpError) {
       setStatus("error");
-      setError("Impossible d’envoyer le code. Vérifiez l’adresse e-mail.");
+      setError("Impossible d’envoyer le lien de connexion. Vérifiez l’adresse e-mail.");
       return;
     }
     setStatus("sent");
-  }
-
-  async function handleVerifyCode(e: React.FormEvent) {
-    e.preventDefault();
-    setStatus("submitting");
-    setError(null);
-    const supabase = createClient();
-    const { error: verifyError } = await supabase.auth.verifyOtp({
-      email: data.email,
-      token: code.trim(),
-      type: "email",
-    });
-    if (verifyError) {
-      setStatus("sent");
-      setError("Code incorrect ou expiré. Vérifiez-le ou redemandez-en un.");
-      return;
-    }
-
-    const result = await submitDossier({ type, forme, data, associes });
-    if (!result.ok) {
-      setStatus("sent");
-      setError(result.needsAuth ? "La vérification a échoué, réessayez." : result.message);
-      return;
-    }
-    window.localStorage.removeItem(storageKey(type));
-    router.push("/mon-dossier");
   }
 
   const apports = useMemo(() => apportSum(associes), [associes]);
   const capital = Number(data.capital) || 0;
   const pct = useMemo(() => progressPct(type, data, associes), [type, data, associes]);
 
-  if (status === "sent" || (status === "submitting" && code)) {
+  if (status === "sent") {
     return (
       <div className="wrap">
-        <section className="sec" style={{ maxWidth: 480 }}>
-          <h1 style={{ fontSize: "clamp(2rem,5vw,2.6rem)" }}>Un dernier code</h1>
+        <section className="sec">
+          <h1 style={{ fontSize: "clamp(2rem,5vw,2.6rem)" }}>Votre dossier est prêt</h1>
           <p className="sub">
-            Un code vient d’être envoyé à <b>{data.email}</b>. Saisissez-le pour finaliser l’envoi de votre
-            dossier « {data.nom || steps[0]} ».
+            Un lien de connexion vient d’être envoyé à <b>{data.email}</b>. Ouvrez-le pour créer votre
+            espace et finaliser l’envoi de votre dossier « {data.nom || steps[0]} ».
           </p>
-          <form onSubmit={handleVerifyCode} style={{ marginTop: 24 }}>
-            <div className="f">
-              <label htmlFor="otpCode">Code reçu par e-mail</label>
-              <input
-                id="otpCode"
-                inputMode="numeric"
-                autoComplete="one-time-code"
-                required
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
-                placeholder="123456"
-              />
-              <span className="msg" role="alert">
-                {error}
-              </span>
-            </div>
-            <button type="submit" className="btn big" disabled={status === "submitting" || !code.trim()}>
-              {status === "submitting" ? "Vérification…" : "Valider et envoyer mon dossier"}
-            </button>
-          </form>
         </section>
       </div>
     );

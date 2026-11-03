@@ -1,6 +1,6 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import CodeLoginForm from "@/components/auth/CodeLoginForm";
+import MagicLinkForm from "@/components/auth/MagicLinkForm";
 
 // Rend un client Supabase (variables NEXT_PUBLIC_*) : jamais prérendu
 // statiquement, pour ne jamais figer des identifiants de build.
@@ -16,10 +16,10 @@ export default function ConnexionPage() {
             <div className="introL">
               <h1 style={{ fontSize: "clamp(2rem,5vw,2.8rem)" }}>Suivre mon dossier</h1>
               <p className="lead">
-                Recevez un code de connexion par e-mail, sans mot de passe. Aucune donnée de carte,
+                Recevez un lien de connexion par e-mail, sans mot de passe. Aucune donnée de carte,
                 aucune information sensible n’y transite.
               </p>
-              <CodeLoginForm />
+              <MagicLinkForm />
             </div>
           </section>
         </div>
