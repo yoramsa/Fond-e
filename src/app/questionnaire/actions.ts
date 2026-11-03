@@ -1,8 +1,10 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { piecesNeeded, type Associe, type DraftData } from "@/lib/questionnaire";
 import type { FormeKey, TypeKey } from "@/lib/data";
+import { sendDossierReceivedEmail } from "@/lib/email";
 
 type DossierPayload = {
   type: TypeKey;
@@ -180,6 +182,27 @@ export async function submitDossier(input: SubmitDossierInput): Promise<SubmitDo
   if (submitError) {
     return { ok: false, needsAuth: false, message: submitError.message };
   }
+
+  // Journal visible au client (l'écriture passe par la clé de service :
+  // `dossier_log` n'accepte aucune écriture directe côté authentifié,
+  // voir migration 0002_rls.sql) et e-mail de confirmation. Ni l'un ni
+  // l'autre ne doit faire échouer la soumission si ça rate.
+  const admin = createAdminClient();
+  const { error: logError } = await admin.from("dossier_log").insert({
+    dossier_id: dossier.id,
+    actor_id: user.id,
+    label: "Dossier reçu",
+    detail: "E-mail de confirmation envoyé au client.",
+    visible_to_client: true,
+  });
+  if (logError) {
+    console.error("Échec de l'écriture du journal de dossier :", logError.message);
+  }
+  await sendDossierReceivedEmail({
+    to: user.email ?? data.email,
+    ref: dossier.ref as string,
+    societeNom: data.nom,
+  });
 
   return { ok: true, ref: dossier.ref as string };
 }

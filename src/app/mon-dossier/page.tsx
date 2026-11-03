@@ -16,10 +16,18 @@ export default async function MonDossierPage() {
     .not("submitted_at", "is", null)
     .order("created_at", { ascending: false });
 
+  const dossierIds = (dossiers ?? []).map((d) => d.id);
+
   const { data: pieces } = await supabase
     .from("pieces")
     .select("id, dossier_id, kind, status, original_filename")
-    .in("dossier_id", (dossiers ?? []).map((d) => d.id));
+    .in("dossier_id", dossierIds);
+
+  const { data: logs } = await supabase
+    .from("dossier_log")
+    .select("id, dossier_id, label, detail, created_at")
+    .in("dossier_id", dossierIds)
+    .order("created_at", { ascending: true });
 
   return (
     <>
@@ -35,6 +43,7 @@ export default async function MonDossierPage() {
             {dossiers && dossiers.length > 0 ? (
               dossiers.map((d) => {
                 const dossierPieces = (pieces ?? []).filter((p) => p.dossier_id === d.id);
+                const dossierLogs = (logs ?? []).filter((l) => l.dossier_id === d.id);
                 return (
                   <div key={d.id} className="cardx" style={{ marginTop: 24 }}>
                     <h3>
@@ -43,6 +52,25 @@ export default async function MonDossierPage() {
                         {d.ref} · {d.status}
                       </span>
                     </h3>
+
+                    {dossierLogs.length > 0 && (
+                      <ol className="tl">
+                        {dossierLogs.map((l) => (
+                          <li key={l.id} className="ok">
+                            <b>{l.label}</b>
+                            <span>
+                              {new Date(l.created_at).toLocaleDateString("fr-FR", {
+                                day: "numeric",
+                                month: "long",
+                                year: "numeric",
+                              })}
+                              {l.detail ? ` — ${l.detail}` : ""}
+                            </span>
+                          </li>
+                        ))}
+                      </ol>
+                    )}
+
                     {dossierPieces.length > 0 && (
                       <>
                         <p className="sub" style={{ marginTop: 0 }}>
