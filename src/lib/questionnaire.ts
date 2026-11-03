@@ -94,6 +94,32 @@ export function piecesNeeded(type: TypeKey, associes: Associe[]): PieceNeeded[] 
   ];
 }
 
+// Longueurs maximales des champs texte libres, pour éviter la saisie de
+// valeurs absurdes (ex. un numéro de téléphone de 20 chiffres).
+export const MAX_LEN = {
+  nom: 120,
+  adresse: 200,
+  nationalite: 60,
+  email: 254,
+  telephone: 20,
+} as const;
+
+/** Ne garde que les caractères valides dans un numéro de téléphone. */
+export function sanitizeTelephone(value: string): string {
+  return value.replace(/[^\d+\s().-]/g, "").slice(0, MAX_LEN.telephone);
+}
+
+/**
+ * Un numéro de téléphone « raisonnable » : entre 6 et 12 chiffres après
+ * un éventuel indicatif international (+33, +1…), espaces/points/tirets
+ * ignorés. Couvre les numéros français (10 chiffres) sans être trop
+ * strict pour un associé étranger.
+ */
+export function telephoneValide(value: string): boolean {
+  const digits = value.replace(/[\s.()-]/g, "");
+  return /^\+?\d{6,15}$/.test(digits);
+}
+
 const KNOWN_PIECE_LABELS: Record<string, string> = {
   justificatif_siege: "Justificatif du siège",
   kbis: "Extrait Kbis de moins de 3 mois",
@@ -233,6 +259,9 @@ export function validateStep(
     if (!data.contact.trim()) return "Votre nom complet est requis.";
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
       return "Une adresse e-mail valide est requise.";
+    }
+    if (data.telephone.trim() && !telephoneValide(data.telephone)) {
+      return "Le numéro de téléphone n’est pas valide.";
     }
     if (!data.consent) return "Vous devez accepter le traitement de votre dossier pour continuer.";
     return null;

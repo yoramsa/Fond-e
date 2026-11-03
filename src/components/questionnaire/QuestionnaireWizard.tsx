@@ -7,12 +7,14 @@ import { FORMES, FormeKey, NEED_BEFORE, OPTS, PLANS, PRIX, TYPES, TypeKey, eur }
 import {
   Associe,
   DraftData,
+  MAX_LEN,
   QuestionnaireDraft,
   apportSum,
   freshAssocie,
   freshQuestionnaire,
   progressPct,
   recapLines,
+  sanitizeTelephone,
   validateStep,
 } from "@/lib/questionnaire";
 import { createClient } from "@/lib/supabase/client";
@@ -289,12 +291,17 @@ export default function QuestionnaireWizard({ type }: { type: TypeKey }) {
                 <Field label="Nom de la société">
                   <input
                     value={data.nom}
+                    maxLength={MAX_LEN.nom}
                     placeholder="Ex. : Studio Alba"
                     onChange={(e) => updateData({ nom: e.target.value })}
                   />
                 </Field>
                 <Field label="Nom commercial" hint="S’il diffère du nom de la société.">
-                  <input value={data.nomCommercial} onChange={(e) => updateData({ nomCommercial: e.target.value })} />
+                  <input
+                    value={data.nomCommercial}
+                    maxLength={MAX_LEN.nom}
+                    onChange={(e) => updateData({ nomCommercial: e.target.value })}
+                  />
                 </Field>
                 <Field label="Que fera votre société ?" hint="Une phrase suffit, nous la mettrons en forme.">
                   <textarea
@@ -341,6 +348,7 @@ export default function QuestionnaireWizard({ type }: { type: TypeKey }) {
                   <Field label="Adresse du siège">
                     <input
                       value={data.adresse}
+                      maxLength={MAX_LEN.adresse}
                       placeholder="12 rue des Lilas, 75011 Paris"
                       onChange={(e) => updateData({ adresse: e.target.value })}
                     />
@@ -374,10 +382,18 @@ export default function QuestionnaireWizard({ type }: { type: TypeKey }) {
                     </h3>
                     <div className="g2">
                       <Field label="Prénom">
-                        <input value={a.prenom} onChange={(e) => updateAssocie(i, { prenom: e.target.value })} />
+                        <input
+                          value={a.prenom}
+                          maxLength={MAX_LEN.nom}
+                          onChange={(e) => updateAssocie(i, { prenom: e.target.value })}
+                        />
                       </Field>
                       <Field label="Nom">
-                        <input value={a.nom} onChange={(e) => updateAssocie(i, { nom: e.target.value })} />
+                        <input
+                          value={a.nom}
+                          maxLength={MAX_LEN.nom}
+                          onChange={(e) => updateAssocie(i, { nom: e.target.value })}
+                        />
                       </Field>
                       <Field label="Date de naissance">
                         <input
@@ -389,6 +405,7 @@ export default function QuestionnaireWizard({ type }: { type: TypeKey }) {
                       <Field label="Nationalité">
                         <input
                           value={a.nationalite}
+                          maxLength={MAX_LEN.nationalite}
                           onChange={(e) => updateAssocie(i, { nationalite: e.target.value })}
                         />
                       </Field>
@@ -396,6 +413,7 @@ export default function QuestionnaireWizard({ type }: { type: TypeKey }) {
                     <Field label="Adresse personnelle">
                       <input
                         value={a.adresse}
+                        maxLength={MAX_LEN.adresse}
                         placeholder="Rue, code postal, ville"
                         onChange={(e) => updateAssocie(i, { adresse: e.target.value })}
                       />
@@ -444,7 +462,11 @@ export default function QuestionnaireWizard({ type }: { type: TypeKey }) {
                 </Field>
                 {data.dirigeantIdx === "x" && (
                   <Field label="Nom complet du dirigeant">
-                    <input value={data.dirigeantNom} onChange={(e) => updateData({ dirigeantNom: e.target.value })} />
+                    <input
+                      value={data.dirigeantNom}
+                      maxLength={MAX_LEN.nom}
+                      onChange={(e) => updateData({ dirigeantNom: e.target.value })}
+                    />
                   </Field>
                 )}
                 <Field label="Durée du mandat">
@@ -477,7 +499,11 @@ export default function QuestionnaireWizard({ type }: { type: TypeKey }) {
                     />
                   </Field>
                   <Field label="Nom de la société">
-                    <input value={data.nom} onChange={(e) => updateData({ nom: e.target.value })} />
+                    <input
+                      value={data.nom}
+                      maxLength={MAX_LEN.nom}
+                      onChange={(e) => updateData({ nom: e.target.value })}
+                    />
                   </Field>
                 </div>
                 {type === "modification" ? (
@@ -582,19 +608,30 @@ export default function QuestionnaireWizard({ type }: { type: TypeKey }) {
                 </div>
                 <div className="g2">
                   <Field label="Votre nom complet">
-                    <input value={data.contact} onChange={(e) => updateData({ contact: e.target.value })} />
+                    <input
+                      value={data.contact}
+                      maxLength={MAX_LEN.nom}
+                      onChange={(e) => updateData({ contact: e.target.value })}
+                    />
                   </Field>
                   <Field label="Téléphone">
                     <input
                       type="tel"
+                      inputMode="tel"
                       value={data.telephone}
+                      maxLength={MAX_LEN.telephone}
                       placeholder="06 12 34 56 78"
-                      onChange={(e) => updateData({ telephone: e.target.value })}
+                      onChange={(e) => updateData({ telephone: sanitizeTelephone(e.target.value) })}
                     />
                   </Field>
                 </div>
                 <Field label="E-mail" hint="Nous y envoyons la confirmation et chaque mise à jour.">
-                  <input type="email" value={data.email} onChange={(e) => updateData({ email: e.target.value })} />
+                  <input
+                    type="email"
+                    value={data.email}
+                    maxLength={MAX_LEN.email}
+                    onChange={(e) => updateData({ email: e.target.value })}
+                  />
                 </Field>
                 <div className="recap">
                   {recapLines(type, data).map((l) => (
