@@ -1167,6 +1167,19 @@ a {
 .fpanel h2 {
   font-size: clamp(1.5rem, 4vw, 2rem);
 }
+.meter {
+  height: 8px;
+  border-radius: 99px;
+  background: var(--line);
+  overflow: hidden;
+  margin-top: 18px;
+}
+.meter div {
+  height: 100%;
+  background: var(--ink);
+  border-radius: 99px;
+  transition: width 0.4s;
+}
 .stepbar {
   display: flex;
   gap: 8px;

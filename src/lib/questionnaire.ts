@@ -94,6 +94,30 @@ export function siegeTexte(data: DraftData): string {
   return "chez un domiciliataire (adresse communiquée après la validation de la formule)";
 }
 
+export function progressPct(type: TypeKey, data: DraftData, associes: Associe[]): number {
+  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email);
+  const checks =
+    type === "creation"
+      ? [
+          !!data.nom.trim(),
+          !!data.activite.trim(),
+          data.siege === "domiciliation" || !!data.adresse.trim(),
+          Number(data.capital) > 0,
+          associes.every((a) => a.prenom && a.nom && a.dateNaissance && Number(a.apportEur) > 0),
+          !!dirigeantNomCalcule(data, associes),
+          emailOk,
+          data.nonCondamnation,
+        ]
+      : [
+          /^\d{9}$/.test(data.siren),
+          !!data.nom.trim(),
+          type === "modification" ? !!data.details.trim() : !!data.dateEffet,
+          !!data.dateEffet,
+          emailOk,
+        ];
+  return Math.round((checks.filter(Boolean).length / checks.length) * 100);
+}
+
 export function validateStep(
   type: TypeKey,
   stepKey: string,

@@ -11,10 +11,11 @@ import {
   apportSum,
   freshAssocie,
   freshQuestionnaire,
+  progressPct,
   validateStep,
 } from "@/lib/questionnaire";
 import { createClient } from "@/lib/supabase/client";
-import { submitDossier } from "@/app/questionnaire/actions";
+import { loadDraftDossier, saveDraftDossier, submitDossier } from "@/app/questionnaire/actions";
 import StatutsPreview from "./StatutsPreview";
 
 function storageKey(type: TypeKey) {
@@ -74,13 +75,38 @@ export default function QuestionnaireWizard({ type }: { type: TypeKey }) {
   const [draft, setDraft] = useState<QuestionnaireDraft>(() => freshQuestionnaire());
   const [error, setError] = useState<string | null>(null);
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "submitting" | "error">("idle");
+  const [isAuthed, setIsAuthed] = useState(false);
   const loaded = useRef(false);
 
   // Le brouillon local (s'il existe) n'est repris qu'après le premier
   // rendu client, pour que le HTML initial corresponde à celui du serveur.
+  // Si le client est déjà connecté (il reprend une démarche commencée
+  // plus tôt), le brouillon serveur prévaut sur le brouillon local.
   useEffect(() => {
-    setDraft(loadDraft(type));
-    loaded.current = true;
+    let cancelled = false;
+    (async () => {
+      const local = loadDraft(type);
+      const supabase = createClient();
+      const { data: userData } = await supabase.auth.getUser();
+      if (cancelled) return;
+      setIsAuthed(!!userData.user);
+
+      if (userData.user) {
+        const serverDraft = await loadDraftDossier(type);
+        if (!cancelled && serverDraft) {
+          setDraft((d) => ({ ...local, forme: serverDraft.forme, data: serverDraft.data }));
+          loaded.current = true;
+          return;
+        }
+      }
+      if (!cancelled) {
+        setDraft(local);
+        loaded.current = true;
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [type]);
 
@@ -88,6 +114,19 @@ export default function QuestionnaireWizard({ type }: { type: TypeKey }) {
     if (!loaded.current) return;
     window.localStorage.setItem(storageKey(type), JSON.stringify(draft));
   }, [draft, type]);
+
+  // Brouillon serveur : enregistrement incrémental pour un client déjà
+  // connecté (le jsonb `dossiers.draft`), indépendant de la soumission
+  // finale. Les clients anonymes ne gardent que le brouillon local,
+  // synchronisé au serveur une fois connectés (voir DraftSync).
+  useEffect(() => {
+    if (!loaded.current || !isAuthed) return;
+    const t = setTimeout(() => {
+      saveDraftDossier({ type, forme: draft.forme, data: draft.data }).catch(() => {});
+    }, 1200);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [draft.forme, draft.data, type, isAuthed]);
 
   const { forme, step, data, associes } = draft;
   const stepKey = steps[step];
@@ -161,6 +200,7 @@ export default function QuestionnaireWizard({ type }: { type: TypeKey }) {
 
   const apports = useMemo(() => apportSum(associes), [associes]);
   const capital = Number(data.capital) || 0;
+  const pct = useMemo(() => progressPct(type, data, associes), [type, data, associes]);
 
   if (status === "sent") {
     return (
@@ -194,6 +234,10 @@ export default function QuestionnaireWizard({ type }: { type: TypeKey }) {
               </div>
             ))}
           </div>
+          <div className="meter" aria-hidden="true">
+            <div style={{ width: `${pct}%` }} />
+          </div>
+          <p className="hint">{pct} % du dossier rempli</p>
 
           <div className="fbody">
             {stepKey === "Société" && (
