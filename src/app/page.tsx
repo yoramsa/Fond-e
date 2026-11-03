@@ -136,11 +136,9 @@ export default function Home() {
                 <h3>Un dossier qu’on peut suivre</h3>
                 <p>
                   Chaque étape est visible en ligne, de la relecture au Kbis. Une pièce manque ? On vous le dit
-                  tout de suite et vous l’envoyez depuis votre téléphone.
+                  tout de suite et vous l’envoyez depuis votre téléphone. Le lien vers votre espace vous est
+                  envoyé par e-mail dès que votre dossier est reçu.
                 </p>
-                <Link className="btn alt" href="/suivi">
-                  Suivre un dossier
-                </Link>
               </div>
             </div>
 

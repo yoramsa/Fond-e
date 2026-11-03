@@ -33,7 +33,6 @@ export type DraftData = {
   telephone: string;
   email: string;
   consent: boolean;
-  piecesPlusTard: boolean;
   opts: Record<(typeof OPTS)[number]["k"], boolean>;
 };
 
@@ -71,7 +70,6 @@ export function freshDraft(): DraftData {
     telephone: "",
     email: "",
     consent: false,
-    piecesPlusTard: false,
     opts: { dom: false, marque: false, compta: false },
   };
 }

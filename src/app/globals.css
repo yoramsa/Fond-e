@@ -1140,6 +1140,64 @@ a {
 }
 
 /* ---- questionnaire wizard ---- */
+/* case à cocher (carrée) : distincte du bouton radio .opt (rond) */
+.chk {
+  position: relative;
+  display: block;
+  cursor: pointer;
+  margin-bottom: 14px;
+}
+.chk input {
+  position: absolute;
+  opacity: 0;
+  inset: 0;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+.chk > span {
+  display: block;
+  padding: 16px 18px 16px 54px;
+  border: 2px solid var(--line);
+  border-radius: 14px;
+  background: #fff;
+  position: relative;
+  transition: border-color 0.15s, background 0.15s;
+}
+.chk > span:before {
+  content: "";
+  position: absolute;
+  left: 18px;
+  top: 19px;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  border: 2px solid var(--line);
+  background: #fff;
+}
+.chk input:checked + span {
+  border-color: var(--ink);
+  box-shadow: 5px 5px 0 var(--tint);
+}
+.chk input:checked + span:before {
+  border-color: var(--ink);
+  background: var(--ink);
+}
+.chk input:checked + span:after {
+  content: "";
+  position: absolute;
+  left: 24px;
+  top: 25px;
+  width: 12px;
+  height: 9px;
+  background: #fff;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12l5 5L20 7'/%3E%3C/svg%3E")
+    center/contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12l5 5L20 7'/%3E%3C/svg%3E")
+    center/contain no-repeat;
+}
+
 .flow {
   display: grid;
   gap: 28px;

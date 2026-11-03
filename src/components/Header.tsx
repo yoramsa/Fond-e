@@ -14,10 +14,6 @@ export default function Header() {
           <Link className="lnk hide-m" href="/#plans">
             Tarifs
           </Link>
-          <Link className="lnk" href="/suivi">
-            <span className="d">Suivre mon dossier</span>
-            <span className="m">Suivi</span>
-          </Link>
           <Link className="btn sm" href="/demarrer">
             Commencer
           </Link>

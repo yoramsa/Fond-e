@@ -63,9 +63,9 @@ function Checkbox({
   children: React.ReactNode;
 }) {
   return (
-    <label className="opt" style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+    <label className="chk">
       <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} />
-      <span style={{ padding: "14px 16px" }}>{children}</span>
+      <span>{children}</span>
     </label>
   );
 }
@@ -505,15 +505,15 @@ export default function QuestionnaireWizard({ type }: { type: TypeKey }) {
             {stepKey === "Pièces" && (
               <>
                 <h2>Vos pièces</h2>
-                <p className="sub">Photo ou scan, lisible, en PDF, JPG ou PNG. Le dépôt se fait à l’étape suivante.</p>
+                <p className="sub">
+                  Préparez ces documents (photo ou scan, lisible, en PDF, JPG ou PNG) : nous vous demanderons de
+                  les déposer une fois votre dossier reçu.
+                </p>
                 <ul className="ck">
                   {NEED_BEFORE[type].map((n) => (
                     <li key={n}>{n}</li>
                   ))}
                 </ul>
-                <Checkbox checked={data.piecesPlusTard} onChange={(v) => updateData({ piecesPlusTard: v })}>
-                  J’ajouterai les pièces manquantes plus tard
-                </Checkbox>
               </>
             )}
 
