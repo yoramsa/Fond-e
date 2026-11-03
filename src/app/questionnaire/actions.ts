@@ -147,7 +147,9 @@ export async function submitDossier(input: SubmitDossierInput): Promise<SubmitDo
           nom: a.nom,
           date_naissance: a.dateNaissance || null,
           nationalite: a.nationalite || null,
-          adresse: a.adresse || null,
+          adresse: a.adresse
+            ? `${a.adresse}${a.codePostal || a.ville ? `, ${[a.codePostal, a.ville].filter(Boolean).join(" ")}` : ""}`
+            : null,
           apport_eur: Number(a.apportEur) || null,
           est_dirigeant: String(position) === data.dirigeantIdx,
         }))

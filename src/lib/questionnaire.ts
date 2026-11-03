@@ -8,6 +8,8 @@ export type Associe = {
   dateNaissance: string;
   nationalite: string;
   adresse: string;
+  codePostal: string;
+  ville: string;
   apportEur: string;
 };
 
@@ -18,6 +20,8 @@ export type DraftData = {
   capital: string;
   siege: Siege;
   adresse: string;
+  codePostal: string;
+  ville: string;
   cloture: string;
   dirigeantIdx: string;
   dirigeantNom: string;
@@ -44,7 +48,16 @@ export type QuestionnaireDraft = {
 };
 
 export function freshAssocie(): Associe {
-  return { prenom: "", nom: "", dateNaissance: "", nationalite: "", adresse: "", apportEur: "" };
+  return {
+    prenom: "",
+    nom: "",
+    dateNaissance: "",
+    nationalite: "",
+    adresse: "",
+    codePostal: "",
+    ville: "",
+    apportEur: "",
+  };
 }
 
 export function freshDraft(): DraftData {
@@ -55,6 +68,8 @@ export function freshDraft(): DraftData {
     capital: "1000",
     siege: "dirigeant",
     adresse: "",
+    codePostal: "",
+    ville: "",
     cloture: "31 décembre",
     dirigeantIdx: "0",
     dirigeantNom: "",
@@ -120,6 +135,16 @@ export function telephoneValide(value: string): boolean {
   return /^\+?\d{6,15}$/.test(digits);
 }
 
+/** Ne garde que des chiffres, 5 maximum. */
+export function sanitizeCodePostal(value: string): string {
+  return value.replace(/\D/g, "").slice(0, 5);
+}
+
+/** Code postal français : exactement 5 chiffres. */
+export function codePostalValide(value: string): boolean {
+  return /^\d{5}$/.test(value);
+}
+
 const KNOWN_PIECE_LABELS: Record<string, string> = {
   justificatif_siege: "Justificatif du siège",
   kbis: "Extrait Kbis de moins de 3 mois",
@@ -166,7 +191,11 @@ export function dirigeantNomCalcule(data: DraftData, associes: Associe[]): strin
 
 export function siegeTexte(data: DraftData): string {
   if (data.siege === "dirigeant") return "au domicile du dirigeant";
-  if (data.siege === "local") return data.adresse.trim() ? `au ${data.adresse.trim()}` : "";
+  if (data.siege === "local") {
+    if (!data.adresse.trim()) return "";
+    const ville = [data.codePostal, data.ville.trim()].filter(Boolean).join(" ");
+    return `au ${data.adresse.trim()}${ville ? ", " + ville : ""}`;
+  }
   return "chez un domiciliataire (adresse communiquée après la validation de la formule)";
 }
 
@@ -177,7 +206,7 @@ export function progressPct(type: TypeKey, data: DraftData, associes: Associe[])
       ? [
           !!data.nom.trim(),
           !!data.activite.trim(),
-          data.siege === "domiciliation" || !!data.adresse.trim(),
+          data.siege === "domiciliation" || (!!data.adresse.trim() && codePostalValide(data.codePostal) && !!data.ville.trim()),
           Number(data.capital) > 0,
           associes.every((a) => a.prenom && a.nom && a.dateNaissance && Number(a.apportEur) > 0),
           !!dirigeantNomCalcule(data, associes),
@@ -207,8 +236,10 @@ export function validateStep(
     if (!data.nom.trim()) return "Le nom de la société est requis.";
     if (!data.activite.trim()) return "Décrivez l’activité de la société.";
     if (!(Number(data.capital) > 0)) return "Le capital doit être supérieur à 0 €.";
-    if (data.siege !== "domiciliation" && !data.adresse.trim()) {
-      return "L’adresse du siège est requise.";
+    if (data.siege !== "domiciliation") {
+      if (!data.adresse.trim()) return "L’adresse du siège est requise.";
+      if (!codePostalValide(data.codePostal)) return "Le code postal du siège doit comporter 5 chiffres.";
+      if (!data.ville.trim()) return "La ville du siège est requise.";
     }
     return null;
   }
@@ -221,6 +252,9 @@ export function validateStep(
     for (const a of associes) {
       if (!a.prenom.trim() || !a.nom.trim() || !a.dateNaissance || !(Number(a.apportEur) > 0)) {
         return "Complétez l’identité et l’apport de chaque associé.";
+      }
+      if (a.codePostal && !codePostalValide(a.codePostal)) {
+        return "Le code postal d’un associé doit comporter 5 chiffres.";
       }
     }
     if (apportSum(associes) !== (Number(data.capital) || 0)) {

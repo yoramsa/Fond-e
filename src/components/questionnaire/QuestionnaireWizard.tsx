@@ -14,6 +14,7 @@ import {
   freshQuestionnaire,
   progressPct,
   recapLines,
+  sanitizeCodePostal,
   sanitizeTelephone,
   validateStep,
 } from "@/lib/questionnaire";
@@ -345,14 +346,35 @@ export default function QuestionnaireWizard({ type }: { type: TypeKey }) {
                   ))}
                 </div>
                 {data.siege !== "domiciliation" && (
-                  <Field label="Adresse du siège">
-                    <input
-                      value={data.adresse}
-                      maxLength={MAX_LEN.adresse}
-                      placeholder="12 rue des Lilas, 75011 Paris"
-                      onChange={(e) => updateData({ adresse: e.target.value })}
-                    />
-                  </Field>
+                  <>
+                    <Field label="Adresse du siège">
+                      <input
+                        value={data.adresse}
+                        maxLength={MAX_LEN.adresse}
+                        placeholder="12 rue des Lilas"
+                        onChange={(e) => updateData({ adresse: e.target.value })}
+                      />
+                    </Field>
+                    <div className="g2">
+                      <Field label="Code postal">
+                        <input
+                          value={data.codePostal}
+                          inputMode="numeric"
+                          maxLength={5}
+                          placeholder="75011"
+                          onChange={(e) => updateData({ codePostal: sanitizeCodePostal(e.target.value) })}
+                        />
+                      </Field>
+                      <Field label="Ville">
+                        <input
+                          value={data.ville}
+                          maxLength={MAX_LEN.nom}
+                          placeholder="Paris"
+                          onChange={(e) => updateData({ ville: e.target.value })}
+                        />
+                      </Field>
+                    </div>
+                  </>
                 )}
                 <Field label="Clôture du premier exercice">
                   <select value={data.cloture} onChange={(e) => updateData({ cloture: e.target.value })}>
@@ -414,10 +436,29 @@ export default function QuestionnaireWizard({ type }: { type: TypeKey }) {
                       <input
                         value={a.adresse}
                         maxLength={MAX_LEN.adresse}
-                        placeholder="Rue, code postal, ville"
+                        placeholder="Rue"
                         onChange={(e) => updateAssocie(i, { adresse: e.target.value })}
                       />
                     </Field>
+                    <div className="g2">
+                      <Field label="Code postal">
+                        <input
+                          value={a.codePostal}
+                          inputMode="numeric"
+                          maxLength={5}
+                          placeholder="75011"
+                          onChange={(e) => updateAssocie(i, { codePostal: sanitizeCodePostal(e.target.value) })}
+                        />
+                      </Field>
+                      <Field label="Ville">
+                        <input
+                          value={a.ville}
+                          maxLength={MAX_LEN.nom}
+                          placeholder="Paris"
+                          onChange={(e) => updateAssocie(i, { ville: e.target.value })}
+                        />
+                      </Field>
+                    </div>
                     <Field label="Apport en numéraire (€)">
                       <input
                         type="number"
