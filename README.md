@@ -41,7 +41,7 @@ Projet Supabase **région UE**, distinct de la plateforme Legaltech existante.
 
 ### Authentification
 
-- **Client** : connexion par lien magique (`/connexion`, e-mail uniquement, sans mot de passe), session courte gérée par Supabase Auth.
+- **Client** : connexion par code reçu par e-mail (`/connexion`, e-mail uniquement, sans mot de passe — Supabase Auth OTP), session courte gérée par Supabase Auth. Le modèle d'e-mail « Magic Link » du projet Supabase doit inclure `{{ .Token }}` (Authentication → Email Templates) pour que le code apparaisse dans l'e-mail envoyé.
 - **Cabinet** : comptes nominatifs e-mail + mot de passe (`/cabinet/connexion`), double authentification TOTP **obligatoire** (`/cabinet/verification`) avant tout accès à `/cabinet/*` — appliqué à la fois par `src/proxy.ts` (redirection) et par des politiques RLS restrictives (`aal2`) côté base de données, donc même un appel direct à l'API ne contourne pas la règle.
 
 ## Avancement (par phases, voir le cahier des charges)
