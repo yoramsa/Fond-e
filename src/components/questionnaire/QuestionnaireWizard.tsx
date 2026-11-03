@@ -23,13 +23,35 @@ function storageKey(type: TypeKey) {
   return `fondee:questionnaire:${type}`;
 }
 
+// Un brouillon (local ou serveur) ne doit jamais faire repartir
+// l'utilisateur plus loin que ce que ses données valident réellement —
+// sinon l'étape affichée « saute » des champs jamais remplis (brouillon
+// d'une version antérieure du questionnaire, données incomplètes, etc).
+function clampStep(type: TypeKey, draft: QuestionnaireDraft): number {
+  const steps = TYPES[type].steps;
+  let resumeStep = 0;
+  for (let i = 0; i < Math.min(draft.step, steps.length - 1); i++) {
+    if (validateStep(type, steps[i], draft.forme, draft.data, draft.associes)) break;
+    resumeStep = i + 1;
+  }
+  return resumeStep;
+}
+
 function loadDraft(type: TypeKey): QuestionnaireDraft {
   if (typeof window === "undefined") return freshQuestionnaire();
   try {
     const raw = window.localStorage.getItem(storageKey(type));
     if (!raw) return freshQuestionnaire();
     const parsed = JSON.parse(raw);
-    return { ...freshQuestionnaire(), ...parsed };
+    const fresh = freshQuestionnaire();
+    const merged: QuestionnaireDraft = {
+      ...fresh,
+      ...parsed,
+      data: { ...fresh.data, ...parsed.data, opts: { ...fresh.data.opts, ...parsed.data?.opts } },
+      associes: Array.isArray(parsed.associes) && parsed.associes.length > 0 ? parsed.associes : fresh.associes,
+    };
+    merged.step = clampStep(type, merged);
+    return merged;
   } catch {
     return freshQuestionnaire();
   }
@@ -95,7 +117,9 @@ export default function QuestionnaireWizard({ type }: { type: TypeKey }) {
       if (userData.user) {
         const serverDraft = await loadDraftDossier(type);
         if (!cancelled && serverDraft) {
-          setDraft((d) => ({ ...local, forme: serverDraft.forme, data: serverDraft.data }));
+          const merged = { ...local, forme: serverDraft.forme, data: serverDraft.data };
+          merged.step = clampStep(type, merged);
+          setDraft(merged);
           loaded.current = true;
           return;
         }
