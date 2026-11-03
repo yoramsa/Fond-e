@@ -20,6 +20,7 @@ import {
 } from "@/lib/questionnaire";
 import { createClient } from "@/lib/supabase/client";
 import { loadDraftDossier, saveDraftDossier, submitDossier } from "@/app/questionnaire/actions";
+import { checkNomSociete, checkSiren } from "@/app/questionnaire/entreprise-actions";
 import StatutsPreview from "./StatutsPreview";
 
 function storageKey(type: TypeKey) {
@@ -102,6 +103,10 @@ export default function QuestionnaireWizard({ type }: { type: TypeKey }) {
   const [error, setError] = useState<string | null>(null);
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "submitting" | "error">("idle");
   const [isAuthed, setIsAuthed] = useState(false);
+  const [sirenCheck, setSirenCheck] = useState<
+    { status: "idle" | "checking" | "ok" | "not_found" | "error"; nom?: string }
+  >({ status: "idle" });
+  const [similarNames, setSimilarNames] = useState<string[]>([]);
   const loaded = useRef(false);
 
   // Le brouillon local (s'il existe) n'est repris qu'après le premier
@@ -160,6 +165,54 @@ export default function QuestionnaireWizard({ type }: { type: TypeKey }) {
   const stepKey = steps[step];
   const f = FORMES[forme];
 
+  // Vérifie le SIREN auprès du registre officiel (API gouv.fr) dès qu'il
+  // comporte 9 chiffres, pour confirmer que la société existe vraiment
+  // avant de continuer (modification/fermeture).
+  useEffect(() => {
+    if (stepKey !== "Votre société") return;
+    if (!/^\d{9}$/.test(data.siren)) {
+      setSirenCheck({ status: "idle" });
+      return;
+    }
+    let cancelled = false;
+    setSirenCheck({ status: "checking" });
+    const t = setTimeout(async () => {
+      const result = await checkSiren(data.siren);
+      if (cancelled) return;
+      if (result.status === "ok") {
+        setSirenCheck({ status: "ok", nom: result.nom });
+        setDraft((d) => (d.data.nom.trim() ? d : { ...d, data: { ...d.data, nom: result.nom } }));
+      } else {
+        setSirenCheck({ status: result.status });
+      }
+    }, 500);
+    return () => {
+      cancelled = true;
+      clearTimeout(t);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data.siren, stepKey]);
+
+  // Avertit (sans bloquer) si une société active porte déjà exactement
+  // ce nom — la disponibilité définitive est vérifiée par le greffe.
+  useEffect(() => {
+    if (stepKey !== "Société" || type !== "creation") return;
+    if (data.nom.trim().length < 3) {
+      setSimilarNames([]);
+      return;
+    }
+    let cancelled = false;
+    const t = setTimeout(async () => {
+      const { matches } = await checkNomSociete(data.nom.trim());
+      if (!cancelled) setSimilarNames(matches);
+    }, 600);
+    return () => {
+      cancelled = true;
+      clearTimeout(t);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data.nom, stepKey, type]);
+
   function updateData(patch: Partial<DraftData>) {
     setDraft((d) => ({ ...d, data: { ...d.data, ...patch } }));
   }
@@ -187,6 +240,26 @@ export default function QuestionnaireWizard({ type }: { type: TypeKey }) {
       setError(err);
       return;
     }
+
+    if (stepKey === "Votre société") {
+      if (sirenCheck.status === "checking") {
+        setError("Vérification du SIREN en cours…");
+        return;
+      }
+      if (sirenCheck.status === "not_found") {
+        setError("Aucune société active trouvée avec ce SIREN. Vérifiez le numéro.");
+        return;
+      }
+      if (sirenCheck.status === "error") {
+        setError("Impossible de vérifier ce SIREN pour l’instant. Réessayez dans un instant.");
+        return;
+      }
+      if (sirenCheck.status !== "ok") {
+        setError("Le SIREN doit être vérifié avant de continuer.");
+        return;
+      }
+    }
+
     setError(null);
 
     if (step < steps.length - 1) {
@@ -289,7 +362,14 @@ export default function QuestionnaireWizard({ type }: { type: TypeKey }) {
                   </div>
                   <small>{f.hint}</small>
                 </div>
-                <Field label="Nom de la société">
+                <Field
+                  label="Nom de la société"
+                  hint={
+                    similarNames.length > 0
+                      ? `⚠ Une société « ${similarNames[0]} » existe déjà — vérifiez qu’il ne s’agit pas d’un conflit de nom (disponibilité définitive vérifiée au dépôt).`
+                      : undefined
+                  }
+                >
                   <input
                     value={data.nom}
                     maxLength={MAX_LEN.nom}
@@ -530,7 +610,20 @@ export default function QuestionnaireWizard({ type }: { type: TypeKey }) {
                 <h2>Quelle société est concernée ?</h2>
                 <p className="sub">Retrouvez ces informations sur votre extrait Kbis.</p>
                 <div className="g2">
-                  <Field label="SIREN">
+                  <Field
+                    label="SIREN"
+                    hint={
+                      sirenCheck.status === "checking"
+                        ? "Vérification…"
+                        : sirenCheck.status === "ok"
+                          ? `✓ ${sirenCheck.nom}`
+                          : sirenCheck.status === "not_found"
+                            ? "Aucune société active trouvée avec ce SIREN."
+                            : sirenCheck.status === "error"
+                              ? "Vérification indisponible pour l’instant."
+                              : undefined
+                    }
+                  >
                     <input
                       value={data.siren}
                       placeholder="9 chiffres"
