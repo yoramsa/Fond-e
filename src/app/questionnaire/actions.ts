@@ -42,6 +42,7 @@ async function upsertDraft(
     societe_nom: data.nom,
     siren: type === "creation" ? null : data.siren,
     plan: Number(data.plan) || null,
+    options: data.opts,
     draft: { data },
   };
 

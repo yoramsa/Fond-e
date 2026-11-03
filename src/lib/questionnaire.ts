@@ -1,4 +1,4 @@
-import { FORMES, FormeKey, TypeKey } from "./data";
+import { FORMES, FormeKey, OPTS, PLANS, PRIX, TypeKey, eur } from "./data";
 
 export type Siege = "dirigeant" | "local" | "domiciliation";
 
@@ -34,6 +34,7 @@ export type DraftData = {
   email: string;
   consent: boolean;
   piecesPlusTard: boolean;
+  opts: Record<(typeof OPTS)[number]["k"], boolean>;
 };
 
 export type QuestionnaireDraft = {
@@ -71,7 +72,22 @@ export function freshDraft(): DraftData {
     email: "",
     consent: false,
     piecesPlusTard: false,
+    opts: { dom: false, marque: false, compta: false },
   };
+}
+
+export function recapLines(type: TypeKey, data: DraftData): { label: string; value: string }[] {
+  const plan = Number(data.plan) || 0;
+  const base = PRIX[type][plan];
+  const lines = [{ label: `Formule ${PLANS[plan].n}`, value: base === 0 ? "0 €" : `${eur(base)} HT` }];
+  for (const o of OPTS) {
+    if (data.opts[o.k]) lines.push({ label: o.n, value: o.p });
+  }
+  lines.push({
+    label: "Frais officiels (greffe, annonce légale)",
+    value: type === "creation" ? "environ 200 €" : "calculés avant paiement",
+  });
+  return lines;
 }
 
 export function freshQuestionnaire(forme: FormeKey = "SASU"): QuestionnaireDraft {

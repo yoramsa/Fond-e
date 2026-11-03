@@ -12,6 +12,7 @@ import {
   freshAssocie,
   freshQuestionnaire,
   progressPct,
+  recapLines,
   validateStep,
 } from "@/lib/questionnaire";
 import { createClient } from "@/lib/supabase/client";
@@ -537,6 +538,24 @@ export default function QuestionnaireWizard({ type }: { type: TypeKey }) {
                     </label>
                   ))}
                 </div>
+                <div className="f">
+                  <label>Options</label>
+                </div>
+                <div className="opts">
+                  {OPTS.map((o) => (
+                    <label className="opt" key={o.k}>
+                      <input
+                        type="checkbox"
+                        checked={data.opts[o.k]}
+                        onChange={(e) => updateData({ opts: { ...data.opts, [o.k]: e.target.checked } })}
+                      />
+                      <span>
+                        <b>{o.n}</b>
+                        <em>{o.p}</em>
+                      </span>
+                    </label>
+                  ))}
+                </div>
                 <div className="g2">
                   <Field label="Votre nom complet">
                     <input value={data.contact} onChange={(e) => updateData({ contact: e.target.value })} />
@@ -553,6 +572,14 @@ export default function QuestionnaireWizard({ type }: { type: TypeKey }) {
                 <Field label="E-mail" hint="Nous y envoyons la confirmation et chaque mise à jour.">
                   <input type="email" value={data.email} onChange={(e) => updateData({ email: e.target.value })} />
                 </Field>
+                <div className="recap">
+                  {recapLines(type, data).map((l) => (
+                    <div key={l.label} className="sumline" style={{ marginBottom: 8 }}>
+                      <span>{l.label}</span>
+                      <span>{l.value}</span>
+                    </div>
+                  ))}
+                </div>
                 <div style={{ height: 16 }} />
                 <Checkbox checked={data.consent} onChange={(v) => updateData({ consent: v })}>
                   J’accepte que Fondée traite mon dossier et me contacte à ce sujet.
