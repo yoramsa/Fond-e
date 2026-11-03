@@ -48,12 +48,12 @@ Projet Supabase **région UE**, distinct de la plateforme Legaltech existante.
 
 - [x] Phase 1 — Initialisation : dépôt, Next.js, design tokens, polices, pages publiques (accueil, introduction) fidèles au prototype.
 - [x] Phase 2 — Schéma de base de données, RLS, authentification client et cabinet avec 2FA, tests des règles d'accès.
-- [ ] Phase 3 — Questionnaire complet, brouillon serveur, validations, aperçu des statuts.
-- [ ] Phase 4 — Dépôt sécurisé des pièces.
+- [x] Phase 3 — Questionnaire complet, brouillon serveur, validations, aperçu des statuts.
+- [x] Phase 4 — Dépôt sécurisé des pièces (reste à câbler la purge automatique via `purge_at`).
 - [ ] Phase 5 — E-mails et page de suivi client.
 - [ ] Phase 6 — Back-office cabinet.
 - [ ] Phase 7 — Paiement Stripe et webhooks.
 - [ ] Phase 8 — Signature Yousign, dépôt guichet unique et annonce légale.
 - [ ] Phase 9 — Durcissement sécurité et RGPD.
 
-Les pages `/questionnaire/[type]`, `/suivi` et le tableau de bord de `/cabinet` sont pour l'instant des pages d'attente (phases suivantes). `/mon-dossier` est un espace client minimal (phase 3 pour le contenu réel).
+Le tableau de bord de `/cabinet` est pour l'instant une page d'attente (phase 6). Pages légales (`/mentions-legales`, `/confidentialite`, `/cgu`) : brouillons à faire valider par un juriste avant mise en production réelle — voir le bandeau sur chaque page.
