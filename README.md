@@ -50,7 +50,7 @@ Projet Supabase **région UE**, distinct de la plateforme Legaltech existante.
 - [x] Phase 2 — Schéma de base de données, RLS, authentification client et cabinet avec 2FA, tests des règles d'accès.
 - [x] Phase 3 — Questionnaire complet, brouillon serveur, validations, aperçu des statuts.
 - [x] Phase 4 — Dépôt sécurisé des pièces (reste à câbler la purge automatique via `purge_at`).
-- [ ] Phase 5 — E-mails et page de suivi client.
+- [x] Phase 5 — E-mails et page de suivi client (e-mail de confirmation + timeline sur `/mon-dossier`). La timeline ne s'enrichira qu'avec la phase 6, aucune action cabinet ne fait encore avancer le statut d'un dossier.
 - [ ] Phase 6 — Back-office cabinet.
 - [ ] Phase 7 — Paiement Stripe et webhooks.
 - [ ] Phase 8 — Signature Yousign, dépôt guichet unique et annonce légale.
