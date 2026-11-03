@@ -1,0 +1,551 @@
+"use client";
+
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { ArrowIcon } from "@/components/icons";
+import { FORMES, FormeKey, NEED_BEFORE, OPTS, PLANS, PRIX, TYPES, TypeKey, eur } from "@/lib/data";
+import {
+  Associe,
+  DraftData,
+  QuestionnaireDraft,
+  apportSum,
+  freshAssocie,
+  freshQuestionnaire,
+  validateStep,
+} from "@/lib/questionnaire";
+import { createClient } from "@/lib/supabase/client";
+import { submitDossier } from "@/app/questionnaire/actions";
+import StatutsPreview from "./StatutsPreview";
+
+function storageKey(type: TypeKey) {
+  return `fondee:questionnaire:${type}`;
+}
+
+function loadDraft(type: TypeKey): QuestionnaireDraft {
+  if (typeof window === "undefined") return freshQuestionnaire();
+  try {
+    const raw = window.localStorage.getItem(storageKey(type));
+    if (!raw) return freshQuestionnaire();
+    const parsed = JSON.parse(raw);
+    return { ...freshQuestionnaire(), ...parsed };
+  } catch {
+    return freshQuestionnaire();
+  }
+}
+
+function Field({
+  label,
+  hint,
+  children,
+}: {
+  label: string;
+  hint?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="f">
+      <label>{label}</label>
+      {children}
+      {hint && <small>{hint}</small>}
+    </div>
+  );
+}
+
+function Checkbox({
+  checked,
+  onChange,
+  children,
+}: {
+  checked: boolean;
+  onChange: (v: boolean) => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <label className="opt" style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+      <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} />
+      <span style={{ padding: "14px 16px" }}>{children}</span>
+    </label>
+  );
+}
+
+export default function QuestionnaireWizard({ type }: { type: TypeKey }) {
+  const router = useRouter();
+  const steps = TYPES[type].steps;
+  const [draft, setDraft] = useState<QuestionnaireDraft>(() => freshQuestionnaire());
+  const [error, setError] = useState<string | null>(null);
+  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "submitting" | "error">("idle");
+  const loaded = useRef(false);
+
+  // Le brouillon local (s'il existe) n'est repris qu'après le premier
+  // rendu client, pour que le HTML initial corresponde à celui du serveur.
+  useEffect(() => {
+    setDraft(loadDraft(type));
+    loaded.current = true;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [type]);
+
+  useEffect(() => {
+    if (!loaded.current) return;
+    window.localStorage.setItem(storageKey(type), JSON.stringify(draft));
+  }, [draft, type]);
+
+  const { forme, step, data, associes } = draft;
+  const stepKey = steps[step];
+  const f = FORMES[forme];
+
+  function updateData(patch: Partial<DraftData>) {
+    setDraft((d) => ({ ...d, data: { ...d.data, ...patch } }));
+  }
+  function updateAssocie(i: number, patch: Partial<Associe>) {
+    setDraft((d) => ({
+      ...d,
+      associes: d.associes.map((a, idx) => (idx === i ? { ...a, ...patch } : a)),
+    }));
+  }
+  function addAssocie() {
+    setDraft((d) => ({ ...d, associes: [...d.associes, freshAssocie()] }));
+  }
+  function removeAssocie(i: number) {
+    setDraft((d) => ({ ...d, associes: d.associes.filter((_, idx) => idx !== i) }));
+  }
+
+  function goBack() {
+    setError(null);
+    setDraft((d) => ({ ...d, step: Math.max(0, d.step - 1) }));
+  }
+
+  async function goNext() {
+    const err = validateStep(type, stepKey, forme, data, associes);
+    if (err) {
+      setError(err);
+      return;
+    }
+    setError(null);
+
+    if (step < steps.length - 1) {
+      setDraft((d) => ({ ...d, step: d.step + 1 }));
+      return;
+    }
+
+    await handleSubmit();
+  }
+
+  async function handleSubmit() {
+    setStatus("submitting");
+    const supabase = createClient();
+    const { data: userData } = await supabase.auth.getUser();
+
+    if (userData.user) {
+      const result = await submitDossier({ type, forme, data, associes });
+      if (result.ok) {
+        window.localStorage.removeItem(storageKey(type));
+        router.push("/mon-dossier");
+        return;
+      }
+      setStatus("error");
+      setError(result.needsAuth ? "Votre session a expiré, reconnectez-vous." : result.message);
+      return;
+    }
+
+    const { error: otpError } = await supabase.auth.signInWithOtp({
+      email: data.email,
+      options: { emailRedirectTo: `${window.location.origin}/auth/callback?next=/mon-dossier` },
+    });
+    if (otpError) {
+      setStatus("error");
+      setError("Impossible d’envoyer le lien de connexion. Vérifiez l’adresse e-mail.");
+      return;
+    }
+    setStatus("sent");
+  }
+
+  const apports = useMemo(() => apportSum(associes), [associes]);
+  const capital = Number(data.capital) || 0;
+
+  if (status === "sent") {
+    return (
+      <div className="wrap">
+        <section className="sec">
+          <h1 style={{ fontSize: "clamp(2rem,5vw,2.6rem)" }}>Votre dossier est prêt</h1>
+          <p className="sub">
+            Un lien de connexion vient d’être envoyé à <b>{data.email}</b>. Ouvrez-le pour créer votre
+            espace et finaliser l’envoi de votre dossier « {data.nom || steps[0]} ».
+          </p>
+        </section>
+      </div>
+    );
+  }
+
+  return (
+    <div className="wrap">
+      <div className="flow">
+        <div className="fpanel">
+          <div className="stepbar" role="list" aria-label="Étapes">
+            {steps.map((s, i) => (
+              <div
+                key={s}
+                className={`st${i === step ? " on" : i < step ? " done" : ""}`}
+                role="listitem"
+                title={s}
+                aria-current={i === step ? "step" : undefined}
+              >
+                <i>{i < step ? "✓" : i + 1}</i>
+                <span>{s}</span>
+              </div>
+            ))}
+          </div>
+
+          <div className="fbody">
+            {stepKey === "Société" && (
+              <>
+                <h2>Parlons de votre société</h2>
+                <p className="sub">Ces informations alimentent vos statuts, que vous voyez se remplir.</p>
+                <div className="f" style={{ marginBottom: 20 }}>
+                  <label>Forme juridique</label>
+                  <div className="chips" role="radiogroup" aria-label="Forme juridique">
+                    {(Object.keys(FORMES) as FormeKey[]).map((k) => (
+                      <label className="chip" key={k}>
+                        <input
+                          type="radio"
+                          name="forme"
+                          checked={forme === k}
+                          onChange={() => setDraft((d) => ({ ...d, forme: k }))}
+                        />
+                        <span>{k}</span>
+                      </label>
+                    ))}
+                  </div>
+                  <small>{f.hint}</small>
+                </div>
+                <Field label="Nom de la société">
+                  <input
+                    value={data.nom}
+                    placeholder="Ex. : Studio Alba"
+                    onChange={(e) => updateData({ nom: e.target.value })}
+                  />
+                </Field>
+                <Field label="Nom commercial" hint="S’il diffère du nom de la société.">
+                  <input value={data.nomCommercial} onChange={(e) => updateData({ nomCommercial: e.target.value })} />
+                </Field>
+                <Field label="Que fera votre société ?" hint="Une phrase suffit, nous la mettrons en forme.">
+                  <textarea
+                    value={data.activite}
+                    placeholder="Ex. : conception de sites web pour les petites entreprises"
+                    onChange={(e) => updateData({ activite: e.target.value })}
+                  />
+                </Field>
+                <Field label="Capital social (€)" hint="Le capital est déposé avant l’immatriculation.">
+                  <input
+                    type="number"
+                    min={1}
+                    inputMode="numeric"
+                    value={data.capital}
+                    onChange={(e) => updateData({ capital: e.target.value })}
+                  />
+                </Field>
+                <div className="f">
+                  <label>Où sera le siège ?</label>
+                </div>
+                <div className="opts">
+                  {(
+                    [
+                      ["dirigeant", "Chez le dirigeant", "Votre domicile, si le bail ou la copropriété l’autorise."],
+                      ["local", "Dans un local", "Bureau, boutique ou local commercial."],
+                      ["domiciliation", "Chez un domiciliataire", "Nous vous proposons une adresse à l’étape finale."],
+                    ] as const
+                  ).map(([v, b, em]) => (
+                    <label className="opt" key={v}>
+                      <input
+                        type="radio"
+                        name="siege"
+                        checked={data.siege === v}
+                        onChange={() => updateData({ siege: v })}
+                      />
+                      <span>
+                        <b>{b}</b>
+                        <em>{em}</em>
+                      </span>
+                    </label>
+                  ))}
+                </div>
+                {data.siege !== "domiciliation" && (
+                  <Field label="Adresse du siège">
+                    <input
+                      value={data.adresse}
+                      placeholder="12 rue des Lilas, 75011 Paris"
+                      onChange={(e) => updateData({ adresse: e.target.value })}
+                    />
+                  </Field>
+                )}
+                <Field label="Clôture du premier exercice">
+                  <select value={data.cloture} onChange={(e) => updateData({ cloture: e.target.value })}>
+                    {["31 décembre", "30 juin", "31 mars", "30 septembre"].map((v) => (
+                      <option key={v}>{v}</option>
+                    ))}
+                  </select>
+                </Field>
+              </>
+            )}
+
+            {stepKey === "Associés" && (
+              <>
+                <h2>{f.uni ? "Qui est l’associé unique ?" : "Qui sont les associés ?"}</h2>
+                <p className="sub">
+                  {f.uni ? `Une ${forme} n’a qu’un seul associé.` : `Une ${forme} compte au moins deux associés.`}
+                </p>
+                {associes.map((a, i) => (
+                  <div className="cardx" key={i}>
+                    <h3>
+                      Associé {i + 1}
+                      {associes.length > (f.uni ? 1 : 2) && (
+                        <button type="button" onClick={() => removeAssocie(i)}>
+                          Retirer
+                        </button>
+                      )}
+                    </h3>
+                    <div className="g2">
+                      <Field label="Prénom">
+                        <input value={a.prenom} onChange={(e) => updateAssocie(i, { prenom: e.target.value })} />
+                      </Field>
+                      <Field label="Nom">
+                        <input value={a.nom} onChange={(e) => updateAssocie(i, { nom: e.target.value })} />
+                      </Field>
+                      <Field label="Date de naissance">
+                        <input
+                          type="date"
+                          value={a.dateNaissance}
+                          onChange={(e) => updateAssocie(i, { dateNaissance: e.target.value })}
+                        />
+                      </Field>
+                      <Field label="Nationalité">
+                        <input
+                          value={a.nationalite}
+                          onChange={(e) => updateAssocie(i, { nationalite: e.target.value })}
+                        />
+                      </Field>
+                    </div>
+                    <Field label="Adresse personnelle">
+                      <input
+                        value={a.adresse}
+                        placeholder="Rue, code postal, ville"
+                        onChange={(e) => updateAssocie(i, { adresse: e.target.value })}
+                      />
+                    </Field>
+                    <Field label="Apport en numéraire (€)">
+                      <input
+                        type="number"
+                        min={1}
+                        inputMode="numeric"
+                        value={a.apportEur}
+                        onChange={(e) => updateAssocie(i, { apportEur: e.target.value })}
+                      />
+                    </Field>
+                    <p className="msg" style={{ margin: "-10px 0 14px", color: "var(--ink2)", fontSize: 14 }}>
+                      {capital && a.apportEur ? `${Math.round((Number(a.apportEur) / capital) * 1000) / 10} % du capital` : ""}
+                    </p>
+                  </div>
+                ))}
+                {!f.uni && (
+                  <button type="button" className="btn alt" onClick={addAssocie}>
+                    Ajouter un associé
+                  </button>
+                )}
+                <div className="sumline" style={{ marginTop: 16, color: apports !== capital ? "var(--red)" : undefined }}>
+                  <span>Total des apports</span>
+                  <span>
+                    {eur(apports)} sur {eur(capital)}
+                  </span>
+                </div>
+              </>
+            )}
+
+            {stepKey === "Dirigeant" && (
+              <>
+                <h2>Qui sera {f.dir.toLowerCase()} ?</h2>
+                <p className="sub">La personne qui représente la société et signe en son nom.</p>
+                <Field label="Dirigeant">
+                  <select value={data.dirigeantIdx} onChange={(e) => updateData({ dirigeantIdx: e.target.value })}>
+                    {associes.map((a, i) => (
+                      <option value={String(i)} key={i}>
+                        {(a.prenom + " " + a.nom).trim() || `Associé ${i + 1}`}
+                      </option>
+                    ))}
+                    <option value="x">Une autre personne</option>
+                  </select>
+                </Field>
+                {data.dirigeantIdx === "x" && (
+                  <Field label="Nom complet du dirigeant">
+                    <input value={data.dirigeantNom} onChange={(e) => updateData({ dirigeantNom: e.target.value })} />
+                  </Field>
+                )}
+                <Field label="Durée du mandat">
+                  <select value={data.mandat} onChange={(e) => updateData({ mandat: e.target.value })}>
+                    {["Durée illimitée", "3 ans", "6 ans"].map((v) => (
+                      <option key={v}>{v}</option>
+                    ))}
+                  </select>
+                </Field>
+                <Checkbox checked={data.nonCondamnation} onChange={(v) => updateData({ nonCondamnation: v })}>
+                  Je déclare sur l’honneur n’avoir fait l’objet d’aucune condamnation m’interdisant de diriger une
+                  société. Vous signerez vos statuts en ligne à l’étape suivante.
+                </Checkbox>
+                <p className="sub">Les bénéficiaires effectifs sont déclarés automatiquement à partir de vos associés.</p>
+              </>
+            )}
+
+            {stepKey === "Votre société" && (
+              <>
+                <h2>Quelle société est concernée ?</h2>
+                <p className="sub">Retrouvez ces informations sur votre extrait Kbis.</p>
+                <div className="g2">
+                  <Field label="SIREN">
+                    <input
+                      value={data.siren}
+                      placeholder="9 chiffres"
+                      inputMode="numeric"
+                      maxLength={9}
+                      onChange={(e) => updateData({ siren: e.target.value.replace(/\D/g, "") })}
+                    />
+                  </Field>
+                  <Field label="Nom de la société">
+                    <input value={data.nom} onChange={(e) => updateData({ nom: e.target.value })} />
+                  </Field>
+                </div>
+                {type === "modification" ? (
+                  <>
+                    <Field label="Que souhaitez-vous changer ?">
+                      <select value={data.nature} onChange={(e) => updateData({ nature: e.target.value })}>
+                        {[
+                          "Transfert de siège",
+                          "Changement de dirigeant",
+                          "Modification des statuts",
+                          "Cession de parts",
+                          "Changement d’activité",
+                          "Autre",
+                        ].map((v) => (
+                          <option key={v}>{v}</option>
+                        ))}
+                      </select>
+                    </Field>
+                    <Field label="Détails">
+                      <textarea
+                        value={data.details}
+                        placeholder="Ex. : le siège passe au 8 avenue Victor Hugo, 69003 Lyon"
+                        onChange={(e) => updateData({ details: e.target.value })}
+                      />
+                    </Field>
+                    <Field label="Date souhaitée" hint="Laissez vide si vous n’avez pas de date précise.">
+                      <input type="date" value={data.dateEffet} onChange={(e) => updateData({ dateEffet: e.target.value })} />
+                    </Field>
+                  </>
+                ) : (
+                  <>
+                    <Field label="Motif de la fermeture">
+                      <select value={data.motif} onChange={(e) => updateData({ motif: e.target.value })}>
+                        {["Cessation d’activité", "Décision des associés", "Fin de la durée statutaire", "Autre"].map(
+                          (v) => (
+                            <option key={v}>{v}</option>
+                          )
+                        )}
+                      </select>
+                    </Field>
+                    <Field label="Date d’effet souhaitée">
+                      <input type="date" value={data.dateEffet} onChange={(e) => updateData({ dateEffet: e.target.value })} />
+                    </Field>
+                  </>
+                )}
+              </>
+            )}
+
+            {stepKey === "Pièces" && (
+              <>
+                <h2>Vos pièces</h2>
+                <p className="sub">Photo ou scan, lisible, en PDF, JPG ou PNG. Le dépôt se fait à l’étape suivante.</p>
+                <ul className="ck">
+                  {NEED_BEFORE[type].map((n) => (
+                    <li key={n}>{n}</li>
+                  ))}
+                </ul>
+                <Checkbox checked={data.piecesPlusTard} onChange={(v) => updateData({ piecesPlusTard: v })}>
+                  J’ajouterai les pièces manquantes plus tard
+                </Checkbox>
+              </>
+            )}
+
+            {stepKey === "Formule" && (
+              <>
+                <h2>Choisissez votre formule</h2>
+                <p className="sub">Plus vous nous confiez, plus nous faisons à votre place.</p>
+                <div className="opts" role="radiogroup" aria-label="Formule">
+                  {PLANS.map((p, i) => (
+                    <label className="opt" key={p.n}>
+                      <input
+                        type="radio"
+                        name="plan"
+                        checked={data.plan === String(i)}
+                        onChange={() => updateData({ plan: String(i) })}
+                      />
+                      <span>
+                        <b>{p.n}</b>
+                        <em>{p.f.filter((x) => !x.endsWith(":")).slice(0, 2).join(" · ")}</em>
+                        <span className="pp">{PRIX[type][i] === 0 ? "0 €" : eur(PRIX[type][i])}</span>
+                      </span>
+                    </label>
+                  ))}
+                </div>
+                <div className="g2">
+                  <Field label="Votre nom complet">
+                    <input value={data.contact} onChange={(e) => updateData({ contact: e.target.value })} />
+                  </Field>
+                  <Field label="Téléphone">
+                    <input
+                      type="tel"
+                      value={data.telephone}
+                      placeholder="06 12 34 56 78"
+                      onChange={(e) => updateData({ telephone: e.target.value })}
+                    />
+                  </Field>
+                </div>
+                <Field label="E-mail" hint="Nous y envoyons la confirmation et chaque mise à jour.">
+                  <input type="email" value={data.email} onChange={(e) => updateData({ email: e.target.value })} />
+                </Field>
+                <div style={{ height: 16 }} />
+                <Checkbox checked={data.consent} onChange={(v) => updateData({ consent: v })}>
+                  J’accepte que Fondée traite mon dossier et me contacte à ce sujet.
+                </Checkbox>
+              </>
+            )}
+
+            {error && (
+              <p className="stepErr" role="alert">
+                {error}
+              </p>
+            )}
+          </div>
+
+          <div className="actions">
+            {step > 0 ? (
+              <button type="button" className="btn alt" onClick={goBack}>
+                Retour
+              </button>
+            ) : (
+              <span />
+            )}
+            <button type="button" className="btn big" onClick={goNext} disabled={status === "submitting"}>
+              {step === steps.length - 1
+                ? status === "submitting"
+                  ? "Envoi…"
+                  : "Envoyer mon dossier"
+                : "Continuer"}{" "}
+              <ArrowIcon />
+            </button>
+          </div>
+        </div>
+
+        {(type !== "creation" || stepKey !== "Pièces") && (
+          <StatutsPreview type={type} forme={forme} data={data} associes={associes} />
+        )}
+      </div>
+    </div>
+  );
+}

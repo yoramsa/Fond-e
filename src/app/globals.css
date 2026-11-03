@@ -1138,3 +1138,144 @@ a {
     grid-template-columns: 1fr 1fr;
   }
 }
+
+/* ---- questionnaire wizard ---- */
+.flow {
+  display: grid;
+  gap: 28px;
+  padding: 28px 0 56px;
+}
+@media (min-width: 960px) {
+  .flow {
+    grid-template-columns: minmax(0, 1fr) 400px;
+    gap: 56px;
+    padding-top: 44px;
+  }
+}
+.fpanel {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 32px;
+  padding: 22px 18px 6px;
+  min-width: 0;
+}
+@media (min-width: 700px) {
+  .fpanel {
+    padding: 38px 38px 10px;
+  }
+}
+.fpanel h2 {
+  font-size: clamp(1.5rem, 4vw, 2rem);
+}
+.stepbar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.stepbar .st {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--ink2);
+  padding: 6px 12px 6px 6px;
+  border-radius: 999px;
+  background: var(--field);
+}
+.stepbar .st i {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid var(--line);
+  display: grid;
+  place-items: center;
+  font: 700 12px var(--font-body);
+  font-style: normal;
+  background: #fff;
+}
+.stepbar .st.on {
+  color: var(--ink);
+  background: var(--field);
+  border: 1px solid var(--line);
+}
+.stepbar .st.on i {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #fff;
+}
+.stepbar .st.done i {
+  background: var(--ok);
+  border-color: var(--ok);
+  color: #fff;
+}
+.stepbar .st:not(.on) span {
+  display: none;
+}
+.stepbar .st:not(.on) {
+  padding: 6px;
+}
+.fbody {
+  margin-top: 24px;
+}
+.cardx {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 20px 20px 4px;
+  margin-bottom: 16px;
+}
+.cardx h3 {
+  font-size: 19px;
+  margin-bottom: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+.cardx h3 button {
+  background: none;
+  border: 0;
+  color: var(--red);
+  font: 600 14px var(--font-body);
+  cursor: pointer;
+  min-height: 40px;
+  padding: 0 4px;
+}
+.stepErr {
+  color: var(--red);
+  font-weight: 600;
+  margin-top: 4px;
+  min-height: 0;
+}
+.msg {
+  color: var(--red);
+  font-size: 14px;
+  font-weight: 500;
+  min-height: 0;
+}
+.sumline {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+  padding: 14px 18px;
+  background: var(--field);
+  border-radius: 14px;
+}
+.pp {
+  display: block;
+  margin-top: 8px;
+  font-weight: 700;
+}
+.actions {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  padding: 14px 0;
+  background: linear-gradient(transparent, #fff 26%);
+  margin-top: 20px;
+  z-index: 5;
+}
