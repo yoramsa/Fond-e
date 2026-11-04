@@ -19,7 +19,7 @@ import {
   validateStep,
 } from "@/lib/questionnaire";
 import { createClient } from "@/lib/supabase/client";
-import { loadDraftDossier, saveDraftDossier, submitDossier } from "@/app/questionnaire/actions";
+import { loadDraftDossier, notifyCabinetImmediate, saveDraftDossier, submitDossier } from "@/app/questionnaire/actions";
 import { checkNomSociete, checkSiren } from "@/app/questionnaire/entreprise-actions";
 import StatutsPreview from "./StatutsPreview";
 
@@ -101,7 +101,8 @@ export default function QuestionnaireWizard({ type }: { type: TypeKey }) {
   const steps = TYPES[type].steps;
   const [draft, setDraft] = useState<QuestionnaireDraft>(() => freshQuestionnaire());
   const [error, setError] = useState<string | null>(null);
-  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "submitting" | "error">("idle");
+  const [status, setStatus] = useState<"idle" | "sending" | "submitting" | "error" | "done">("idle");
+  const [doneInfo, setDoneInfo] = useState<{ ref?: string; docBase64?: string; docFilename?: string } | null>(null);
   const [isAuthed, setIsAuthed] = useState(false);
   const [sirenCheck, setSirenCheck] = useState<
     { status: "idle" | "checking" | "ok" | "not_found" | "error"; nom?: string }
@@ -279,7 +280,8 @@ export default function QuestionnaireWizard({ type }: { type: TypeKey }) {
       const result = await submitDossier({ type, forme, data, associes });
       if (result.ok) {
         window.localStorage.removeItem(storageKey(type));
-        router.push("/mon-dossier");
+        setDoneInfo({ ref: result.ref, docBase64: result.docBase64, docFilename: result.docFilename });
+        setStatus("done");
         return;
       }
       setStatus("error");
@@ -287,31 +289,59 @@ export default function QuestionnaireWizard({ type }: { type: TypeKey }) {
       return;
     }
 
-    const { error: otpError } = await supabase.auth.signInWithOtp({
-      email: data.email,
-      options: { emailRedirectTo: `${window.location.origin}/auth/callback?next=/mon-dossier` },
-    });
-    if (otpError) {
-      setStatus("error");
-      setError("Impossible d’envoyer le lien de connexion. Vérifiez l’adresse e-mail.");
-      return;
-    }
-    setStatus("sent");
+    // Pas de compte client requis pour soumettre : le cabinet est
+    // prévenu par e-mail avec les statuts dès ce clic, et le client voit
+    // directement l'écran de confirmation, sans lien de connexion.
+    const notified = await notifyCabinetImmediate({ type, forme, data, associes });
+    window.localStorage.removeItem(storageKey(type));
+    setDoneInfo({ docBase64: notified.docBase64, docFilename: notified.docFilename });
+    setStatus("done");
   }
 
   const apports = useMemo(() => apportSum(associes), [associes]);
   const capital = Number(data.capital) || 0;
   const pct = useMemo(() => progressPct(type, data, associes), [type, data, associes]);
 
-  if (status === "sent") {
+  if (status === "done" && doneInfo) {
     return (
       <div className="wrap">
         <section className="sec">
-          <h1 style={{ fontSize: "clamp(2rem,5vw,2.6rem)" }}>Votre dossier est prêt</h1>
+          <h1 style={{ fontSize: "clamp(2rem,5vw,2.6rem)" }}>Merci !</h1>
           <p className="sub">
-            Un lien de connexion vient d’être envoyé à <b>{data.email}</b>. Ouvrez-le pour créer votre
-            espace et finaliser l’envoi de votre dossier « {data.nom || steps[0]} ».
+            {doneInfo.ref ? (
+              <>
+                Votre dossier <b>{doneInfo.ref}</b> a bien été reçu.
+              </>
+            ) : (
+              "Votre dossier a bien été reçu."
+            )}{" "}
+            Un expert-comptable va le relire et nous vous contacterons très prochainement.
           </p>
+          <p className="sub">
+            Une question avant ça ? Contactez-nous, nous sommes disponibles par téléphone.
+          </p>
+          <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 8 }}>
+            <a className="btn big" href="tel:067777777">
+              Nous appeler au 06 77 77 77 7
+            </a>
+            {doneInfo.ref && (
+              <button type="button" className="btn alt" onClick={() => router.push("/mon-dossier")}>
+                Aller à mon espace
+              </button>
+            )}
+          </div>
+
+          {doneInfo.docBase64 && doneInfo.docFilename && (
+            <p className="sub" style={{ marginTop: 24 }}>
+              <a
+                href={`data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,${doneInfo.docBase64}`}
+                download={doneInfo.docFilename}
+              >
+                Télécharger les statuts générés
+              </a>{" "}
+              (lien temporaire, pour les tests uniquement)
+            </p>
+          )}
         </section>
       </div>
     );

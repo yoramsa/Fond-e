@@ -110,10 +110,33 @@ export async function loadDraftDossier(type: TypeKey): Promise<LoadedDraft> {
   return { forme: (dossier.forme as FormeKey) ?? "SASU", data: draft.data };
 }
 
+/**
+ * Prévient le cabinet par e-mail dès que le client valide le formulaire,
+ * avec les statuts SASU pré-remplis en pièce jointe — sans compte ni
+ * connexion du client. Ne bloque jamais la suite du parcours client si
+ * ça échoue. Renvoie aussi le document en base64 pour que le client
+ * puisse le télécharger immédiatement (temporaire, phase de test).
+ */
+export async function notifyCabinetImmediate(
+  input: DossierPayload & { associes: Associe[] }
+): Promise<{ docBase64?: string; docFilename?: string }> {
+  const { type, forme, data, associes } = input;
+  if (type !== "creation" || forme !== "SASU") return {};
+  try {
+    const buffer = generateStatutsSasuBuffer(data, associes);
+    const ref = `brouillon-${Date.now()}`;
+    await sendStatutsToCabinet({ ref, societeNom: data.nom, buffer });
+    return { docBase64: buffer.toString("base64"), docFilename: `Statuts-${ref}.docx` };
+  } catch (err) {
+    console.error("Échec de l'envoi immédiat des statuts au cabinet :", err);
+    return {};
+  }
+}
+
 export type SubmitDossierInput = DossierPayload & { associes: Associe[] };
 
 export type SubmitDossierResult =
-  | { ok: true; ref: string }
+  | { ok: true; ref: string; docBase64?: string; docFilename?: string }
   | { ok: false; needsAuth: true }
   | { ok: false; needsAuth: false; message: string };
 
@@ -209,14 +232,34 @@ export async function submitDossier(input: SubmitDossierInput): Promise<SubmitDo
 
   // Statuts SASU pré-remplis envoyés au cabinet pour relecture. Les
   // autres formes (SAS, EURL, SARL, SCI) n'ont pas encore de modèle.
+  //
+  // TEMPORAIRE (phase de test) : le document est aussi renvoyé en base64
+  // au client (pour l'écran de confirmation juste après soumission) ET
+  // persisté dans le dossier via le client admin — une fois `submitted_at`
+  // posé, la policy RLS `dossiers_client_update_draft` interdit au client
+  // d'écrire sur sa propre ligne, d'où l'admin client. La persistance
+  // rend le lien de téléchargement fiable sur /mon-dossier même si la
+  // confirmation magic-link s'ouvre dans un autre navigateur. À retirer
+  // (colonne `draft` et bloc ci-dessous) une fois les tests terminés.
+  let docBase64: string | undefined;
+  let docFilename: string | undefined;
   if (type === "creation" && input.forme === "SASU") {
     try {
       const buffer = generateStatutsSasuBuffer(data, associes);
       await sendStatutsToCabinet({ ref: dossier.ref as string, societeNom: data.nom, buffer });
+      docBase64 = buffer.toString("base64");
+      docFilename = `Statuts-${dossier.ref}.docx`;
+      const { error: draftUpdateError } = await admin
+        .from("dossiers")
+        .update({ draft: { data, statutsBase64: docBase64, statutsFilename: docFilename } })
+        .eq("id", dossier.id);
+      if (draftUpdateError) {
+        console.error("Échec de l'enregistrement des statuts SASU :", draftUpdateError.message);
+      }
     } catch (err) {
       console.error("Échec de la génération des statuts SASU :", err);
     }
   }
 
-  return { ok: true, ref: dossier.ref as string };
+  return { ok: true, ref: dossier.ref as string, docBase64, docFilename };
 }
