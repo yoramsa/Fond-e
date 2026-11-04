@@ -125,7 +125,14 @@ export async function notifyCabinetImmediate(
   try {
     const buffer = generateStatutsSasuBuffer(data, associes);
     const ref = `brouillon-${Date.now()}`;
-    await sendStatutsToCabinet({ ref, societeNom: data.nom, buffer });
+    await sendStatutsToCabinet({
+      ref,
+      societeNom: data.nom,
+      buffer,
+      contactNom: data.contact,
+      contactEmail: data.email,
+      contactTelephone: data.telephone,
+    });
     return { docBase64: buffer.toString("base64"), docFilename: `Statuts-${ref}.docx` };
   } catch (err) {
     console.error("Échec de l'envoi immédiat des statuts au cabinet :", err);
@@ -246,7 +253,14 @@ export async function submitDossier(input: SubmitDossierInput): Promise<SubmitDo
   if (type === "creation" && input.forme === "SASU") {
     try {
       const buffer = generateStatutsSasuBuffer(data, associes);
-      await sendStatutsToCabinet({ ref: dossier.ref as string, societeNom: data.nom, buffer });
+      await sendStatutsToCabinet({
+        ref: dossier.ref as string,
+        societeNom: data.nom,
+        buffer,
+        contactNom: data.contact,
+        contactEmail: data.email,
+        contactTelephone: data.telephone,
+      });
       docBase64 = buffer.toString("base64");
       docFilename = `Statuts-${dossier.ref}.docx`;
       const { error: draftUpdateError } = await admin

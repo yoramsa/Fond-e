@@ -334,7 +334,7 @@ export default function QuestionnaireWizard({ type }: { type: TypeKey }) {
           {doneInfo.docBase64 && doneInfo.docFilename && (
             <div style={{ marginTop: 24 }}>
               <a
-                className="btn alt"
+                className="btn"
                 href={`data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,${doneInfo.docBase64}`}
                 download={doneInfo.docFilename}
               >
