@@ -243,7 +243,7 @@ export function validateStep(
     if (!data.nom.trim()) return "Le nom de la société est requis.";
     if (!data.activite.trim()) return "Décrivez l’activité de la société.";
     if (!(Number(data.capital) > 0)) return "Le capital doit être supérieur à 0 €.";
-    if (Number(data.capital) % Number(data.valeurNominale) !== 0) {
+    if (forme === "SASU" && Number(data.capital) % Number(data.valeurNominale) !== 0) {
       return "Le capital doit être un multiple de la valeur nominale d’une action.";
     }
     if (data.siege !== "domiciliation") {

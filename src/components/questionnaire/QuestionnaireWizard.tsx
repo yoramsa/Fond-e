@@ -402,14 +402,16 @@ export default function QuestionnaireWizard({ type }: { type: TypeKey }) {
                 </Field>
                 {forme === "SASU" && (
                   <Field
-                    label="Valeur nominale d’une action"
-                    hint="Si vous ne savez pas, laissez 1 € — ça convient à n’importe quel capital."
+                    label="Valeur nominale d’une action (€)"
+                    hint="Si vous ne savez pas, laissez 1 € — ça convient à n’importe quel capital. Doit diviser le capital exactement."
                   >
-                    <select value={data.valeurNominale} onChange={(e) => updateData({ valeurNominale: e.target.value })}>
-                      <option value="1">1 € (je ne sais pas / par défaut)</option>
-                      <option value="10">10 €</option>
-                      <option value="100">100 €</option>
-                    </select>
+                    <input
+                      type="number"
+                      min={1}
+                      inputMode="numeric"
+                      value={data.valeurNominale}
+                      onChange={(e) => updateData({ valeurNominale: e.target.value })}
+                    />
                   </Field>
                 )}
                 <div className="f">
