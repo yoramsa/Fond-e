@@ -101,8 +101,8 @@ export default function QuestionnaireWizard({ type }: { type: TypeKey }) {
   const steps = TYPES[type].steps;
   const [draft, setDraft] = useState<QuestionnaireDraft>(() => freshQuestionnaire());
   const [error, setError] = useState<string | null>(null);
-  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "submitting" | "error" | "done">("idle");
-  const [doneInfo, setDoneInfo] = useState<{ ref: string; docBase64?: string; docFilename?: string } | null>(null);
+  const [status, setStatus] = useState<"idle" | "sending" | "submitting" | "error" | "done">("idle");
+  const [doneInfo, setDoneInfo] = useState<{ ref?: string; docBase64?: string; docFilename?: string } | null>(null);
   const [isAuthed, setIsAuthed] = useState(false);
   const [sirenCheck, setSirenCheck] = useState<
     { status: "idle" | "checking" | "ok" | "not_found" | "error"; nom?: string }
@@ -273,12 +273,6 @@ export default function QuestionnaireWizard({ type }: { type: TypeKey }) {
 
   async function handleSubmit() {
     setStatus("submitting");
-
-    // Prévient le cabinet par e-mail dès ce clic, indépendamment de la
-    // suite (connexion, lien magique...) : le document ne doit jamais
-    // dépendre de cette étape pour arriver au cabinet.
-    notifyCabinetImmediate({ type, forme, data, associes });
-
     const supabase = createClient();
     const { data: userData } = await supabase.auth.getUser();
 
@@ -295,16 +289,13 @@ export default function QuestionnaireWizard({ type }: { type: TypeKey }) {
       return;
     }
 
-    const { error: otpError } = await supabase.auth.signInWithOtp({
-      email: data.email,
-      options: { emailRedirectTo: `${window.location.origin}/auth/callback?next=/mon-dossier` },
-    });
-    if (otpError) {
-      setStatus("error");
-      setError("Impossible d’envoyer le lien de connexion. Vérifiez l’adresse e-mail.");
-      return;
-    }
-    setStatus("sent");
+    // Pas de compte client requis pour soumettre : le cabinet est
+    // prévenu par e-mail avec les statuts dès ce clic, et le client voit
+    // directement l'écran de confirmation, sans lien de connexion.
+    const notified = await notifyCabinetImmediate({ type, forme, data, associes });
+    window.localStorage.removeItem(storageKey(type));
+    setDoneInfo({ docBase64: notified.docBase64, docFilename: notified.docFilename });
+    setStatus("done");
   }
 
   const apports = useMemo(() => apportSum(associes), [associes]);
@@ -317,8 +308,14 @@ export default function QuestionnaireWizard({ type }: { type: TypeKey }) {
         <section className="sec">
           <h1 style={{ fontSize: "clamp(2rem,5vw,2.6rem)" }}>Merci !</h1>
           <p className="sub">
-            Votre dossier <b>{doneInfo.ref}</b> a bien été reçu. Un expert-comptable va le relire et nous
-            vous contacterons très prochainement.
+            {doneInfo.ref ? (
+              <>
+                Votre dossier <b>{doneInfo.ref}</b> a bien été reçu.
+              </>
+            ) : (
+              "Votre dossier a bien été reçu."
+            )}{" "}
+            Un expert-comptable va le relire et nous vous contacterons très prochainement.
           </p>
           <p className="sub">
             Une question avant ça ? Contactez-nous, nous sommes disponibles par téléphone.
@@ -327,9 +324,11 @@ export default function QuestionnaireWizard({ type }: { type: TypeKey }) {
             <a className="btn big" href="tel:067777777">
               Nous appeler au 06 77 77 77 7
             </a>
-            <button type="button" className="btn alt" onClick={() => router.push("/mon-dossier")}>
-              Aller à mon espace
-            </button>
+            {doneInfo.ref && (
+              <button type="button" className="btn alt" onClick={() => router.push("/mon-dossier")}>
+                Aller à mon espace
+              </button>
+            )}
           </div>
 
           {doneInfo.docBase64 && doneInfo.docFilename && (
@@ -343,20 +342,6 @@ export default function QuestionnaireWizard({ type }: { type: TypeKey }) {
               (lien temporaire, pour les tests uniquement)
             </p>
           )}
-        </section>
-      </div>
-    );
-  }
-
-  if (status === "sent") {
-    return (
-      <div className="wrap">
-        <section className="sec">
-          <h1 style={{ fontSize: "clamp(2rem,5vw,2.6rem)" }}>Votre dossier est prêt</h1>
-          <p className="sub">
-            Un lien de connexion vient d’être envoyé à <b>{data.email}</b>. Ouvrez-le pour créer votre
-            espace et finaliser l’envoi de votre dossier « {data.nom || steps[0]} ».
-          </p>
         </section>
       </div>
     );
