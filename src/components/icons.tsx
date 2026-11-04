@@ -40,3 +40,13 @@ export function ChatIcon() {
     </svg>
   );
 }
+
+export function RocketIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M12 2c2.5 2 4 5.5 4 9.5 0 2-.5 4-1.5 6l-2.5 3-2.5-3c-1-2-1.5-4-1.5-6C8 7.5 9.5 4 12 2z" />
+      <path d="M9 13c-2 .5-3 2-3 5 2-1 3.5-2 4-3.5M15 13c2 .5 3 2 3 5-2-1-3.5-2-4-3.5" />
+      <circle cx="12" cy="9" r="1.3" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
