@@ -400,6 +400,18 @@ export default function QuestionnaireWizard({ type }: { type: TypeKey }) {
                     onChange={(e) => updateData({ capital: e.target.value })}
                   />
                 </Field>
+                {forme === "SASU" && (
+                  <Field
+                    label="Valeur nominale d’une action"
+                    hint="Si vous ne savez pas, laissez 1 € — ça convient à n’importe quel capital."
+                  >
+                    <select value={data.valeurNominale} onChange={(e) => updateData({ valeurNominale: e.target.value })}>
+                      <option value="1">1 € (je ne sais pas / par défaut)</option>
+                      <option value="10">10 €</option>
+                      <option value="100">100 €</option>
+                    </select>
+                  </Field>
+                )}
                 <div className="f">
                   <label>Où sera le siège ?</label>
                 </div>
@@ -482,6 +494,15 @@ export default function QuestionnaireWizard({ type }: { type: TypeKey }) {
                         </button>
                       )}
                     </h3>
+                    <Field label="Civilité">
+                      <select
+                        value={a.civilite}
+                        onChange={(e) => updateAssocie(i, { civilite: e.target.value as "M" | "Mme" })}
+                      >
+                        <option value="M">M.</option>
+                        <option value="Mme">Mme</option>
+                      </select>
+                    </Field>
                     <div className="g2">
                       <Field label="Prénom">
                         <input
@@ -502,6 +523,14 @@ export default function QuestionnaireWizard({ type }: { type: TypeKey }) {
                           type="date"
                           value={a.dateNaissance}
                           onChange={(e) => updateAssocie(i, { dateNaissance: e.target.value })}
+                        />
+                      </Field>
+                      <Field label="Lieu de naissance">
+                        <input
+                          value={a.lieuNaissance}
+                          maxLength={MAX_LEN.nom}
+                          placeholder="Ville (et pays si hors de France)"
+                          onChange={(e) => updateAssocie(i, { lieuNaissance: e.target.value })}
                         />
                       </Field>
                       <Field label="Nationalité">

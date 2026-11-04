@@ -1,11 +1,14 @@
 import { FORMES, FormeKey, OPTS, PLANS, PRIX, TypeKey, eur } from "./data";
 
 export type Siege = "dirigeant" | "local" | "domiciliation";
+export type Civilite = "M" | "Mme";
 
 export type Associe = {
+  civilite: Civilite;
   prenom: string;
   nom: string;
   dateNaissance: string;
+  lieuNaissance: string;
   nationalite: string;
   adresse: string;
   codePostal: string;
@@ -18,6 +21,7 @@ export type DraftData = {
   nomCommercial: string;
   activite: string;
   capital: string;
+  valeurNominale: string;
   siege: Siege;
   adresse: string;
   codePostal: string;
@@ -49,9 +53,11 @@ export type QuestionnaireDraft = {
 
 export function freshAssocie(): Associe {
   return {
+    civilite: "M",
     prenom: "",
     nom: "",
     dateNaissance: "",
+    lieuNaissance: "",
     nationalite: "",
     adresse: "",
     codePostal: "",
@@ -66,6 +72,7 @@ export function freshDraft(): DraftData {
     nomCommercial: "",
     activite: "",
     capital: "1000",
+    valeurNominale: "1",
     siege: "dirigeant",
     adresse: "",
     codePostal: "",
@@ -236,6 +243,9 @@ export function validateStep(
     if (!data.nom.trim()) return "Le nom de la société est requis.";
     if (!data.activite.trim()) return "Décrivez l’activité de la société.";
     if (!(Number(data.capital) > 0)) return "Le capital doit être supérieur à 0 €.";
+    if (Number(data.capital) % Number(data.valeurNominale) !== 0) {
+      return "Le capital doit être un multiple de la valeur nominale d’une action.";
+    }
     if (data.siege !== "domiciliation") {
       if (!data.adresse.trim()) return "L’adresse du siège est requise.";
       if (!codePostalValide(data.codePostal)) return "Le code postal du siège doit comporter 5 chiffres.";
@@ -250,8 +260,14 @@ export function validateStep(
       return `Une ${forme} compte ${min > 1 ? "au moins " + min + " associés" : "un associé unique"}.`;
     }
     for (const a of associes) {
-      if (!a.prenom.trim() || !a.nom.trim() || !a.dateNaissance || !(Number(a.apportEur) > 0)) {
-        return "Complétez l’identité et l’apport de chaque associé.";
+      if (
+        !a.prenom.trim() ||
+        !a.nom.trim() ||
+        !a.dateNaissance ||
+        !a.lieuNaissance.trim() ||
+        !(Number(a.apportEur) > 0)
+      ) {
+        return "Complétez l’identité, le lieu de naissance et l’apport de chaque associé.";
       }
       if (a.codePostal && !codePostalValide(a.codePostal)) {
         return "Le code postal d’un associé doit comporter 5 chiffres.";

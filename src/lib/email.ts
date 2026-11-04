@@ -9,7 +9,12 @@ const FROM = process.env.RESEND_FROM_EMAIL ?? "onboarding@resend.dev";
  * côté serveur et avalée, le dossier reste valide même si l'e-mail
  * échoue (ex. clé API absente, domaine Resend non vérifié).
  */
-async function sendEmail(input: { to: string; subject: string; html: string }): Promise<void> {
+async function sendEmail(input: {
+  to: string;
+  subject: string;
+  html: string;
+  attachments?: { filename: string; content: Buffer }[];
+}): Promise<void> {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
     console.warn("RESEND_API_KEY absente : e-mail non envoyé.", input.subject);
@@ -22,6 +27,7 @@ async function sendEmail(input: { to: string; subject: string; html: string }): 
       to: input.to,
       subject: input.subject,
       html: input.html,
+      attachments: input.attachments,
     });
     if (error) {
       console.error("Échec de l'envoi d'e-mail :", error);
@@ -41,5 +47,32 @@ export async function sendDossierReceivedEmail(input: { to: string; ref: string;
       <p>Un expert-comptable va le relire. Vous pouvez suivre son avancement et déposer vos pièces depuis votre espace, à tout moment.</p>
       <p>— L'équipe Fondée</p>
     `,
+  });
+}
+
+/**
+ * Statuts SASU pré-remplis envoyés au cabinet dès la soumission — à
+ * relire avant tout usage officiel, les champs non collectés par le
+ * questionnaire (ex. président distinct de l'associé) restent à
+ * compléter à la main.
+ */
+export async function sendStatutsToCabinet(input: {
+  ref: string;
+  societeNom: string;
+  buffer: Buffer;
+}) {
+  const to = process.env.CABINET_NOTIFICATION_EMAIL;
+  if (!to) {
+    console.warn("CABINET_NOTIFICATION_EMAIL absente : statuts non envoyés.", input.ref);
+    return;
+  }
+  await sendEmail({
+    to,
+    subject: `Statuts à relire — ${input.societeNom || input.ref} (${input.ref})`,
+    html: `
+      <p>Nouveau dossier de création SASU : <strong>${input.societeNom || input.ref}</strong> (${input.ref}).</p>
+      <p>Statuts pré-remplis à partir des réponses du client, en pièce jointe — à relire avant tout usage officiel.</p>
+    `,
+    attachments: [{ filename: `Statuts-${input.ref}.docx`, content: input.buffer }],
   });
 }

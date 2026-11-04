@@ -4,7 +4,8 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { piecesNeeded, type Associe, type DraftData } from "@/lib/questionnaire";
 import type { FormeKey, TypeKey } from "@/lib/data";
-import { sendDossierReceivedEmail } from "@/lib/email";
+import { sendDossierReceivedEmail, sendStatutsToCabinet } from "@/lib/email";
+import { generateStatutsSasuBuffer } from "@/lib/statutsSasu";
 
 type DossierPayload = {
   type: TypeKey;
@@ -205,6 +206,17 @@ export async function submitDossier(input: SubmitDossierInput): Promise<SubmitDo
     ref: dossier.ref as string,
     societeNom: data.nom,
   });
+
+  // Statuts SASU pré-remplis envoyés au cabinet pour relecture. Les
+  // autres formes (SAS, EURL, SARL, SCI) n'ont pas encore de modèle.
+  if (type === "creation" && input.forme === "SASU") {
+    try {
+      const buffer = generateStatutsSasuBuffer(data, associes);
+      await sendStatutsToCabinet({ ref: dossier.ref as string, societeNom: data.nom, buffer });
+    } catch (err) {
+      console.error("Échec de la génération des statuts SASU :", err);
+    }
+  }
 
   return { ok: true, ref: dossier.ref as string };
 }
