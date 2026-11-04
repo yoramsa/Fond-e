@@ -113,7 +113,7 @@ export async function loadDraftDossier(type: TypeKey): Promise<LoadedDraft> {
 export type SubmitDossierInput = DossierPayload & { associes: Associe[] };
 
 export type SubmitDossierResult =
-  | { ok: true; ref: string }
+  | { ok: true; ref: string; docBase64?: string; docFilename?: string }
   | { ok: false; needsAuth: true }
   | { ok: false; needsAuth: false; message: string };
 
@@ -209,14 +209,23 @@ export async function submitDossier(input: SubmitDossierInput): Promise<SubmitDo
 
   // Statuts SASU pré-remplis envoyés au cabinet pour relecture. Les
   // autres formes (SAS, EURL, SARL, SCI) n'ont pas encore de modèle.
+  //
+  // TEMPORAIRE (phase de test) : le document est aussi renvoyé en base64
+  // au client pour qu'il puisse le télécharger directement depuis le
+  // formulaire, en plus de l'e-mail envoyé au cabinet. À retirer une fois
+  // les tests terminés.
+  let docBase64: string | undefined;
+  let docFilename: string | undefined;
   if (type === "creation" && input.forme === "SASU") {
     try {
       const buffer = generateStatutsSasuBuffer(data, associes);
       await sendStatutsToCabinet({ ref: dossier.ref as string, societeNom: data.nom, buffer });
+      docBase64 = buffer.toString("base64");
+      docFilename = `Statuts-${dossier.ref}.docx`;
     } catch (err) {
       console.error("Échec de la génération des statuts SASU :", err);
     }
   }
 
-  return { ok: true, ref: dossier.ref as string };
+  return { ok: true, ref: dossier.ref as string, docBase64, docFilename };
 }

@@ -9,7 +9,10 @@ function storageKey(type: TypeKey) {
   return `fondee:questionnaire:${type}`;
 }
 
-type Outcome = { type: TypeKey; ref: string } | { error: string } | null;
+type Outcome =
+  | { type: TypeKey; ref: string; docBase64?: string; docFilename?: string }
+  | { error: string }
+  | null;
 
 /**
  * Le questionnaire se remplit avant la connexion (lien magique) : le
@@ -43,7 +46,7 @@ export default function DraftSync() {
           if (cancelled) return;
           if (result.ok) {
             window.localStorage.removeItem(storageKey(type));
-            setOutcome({ type, ref: result.ref });
+            setOutcome({ type, ref: result.ref, docBase64: result.docBase64, docFilename: result.docFilename });
             router.refresh();
           } else if (!result.needsAuth) {
             setOutcome({ error: result.message });
@@ -75,8 +78,27 @@ export default function DraftSync() {
   }
 
   return (
-    <div className="sumline" role="status" style={{ marginBottom: 24 }}>
-      <span>Dossier {outcome.ref} reçu — {TYPES[outcome.type].verb.toLowerCase()}</span>
+    <div className="cardx" role="status" style={{ marginBottom: 24 }}>
+      <h3>Merci !</h3>
+      <p className="sub" style={{ marginTop: 0 }}>
+        Dossier {outcome.ref} reçu — {TYPES[outcome.type].verb.toLowerCase()}. Un expert-comptable va le
+        relire et nous vous contacterons très prochainement.
+      </p>
+      <p className="sub">Une question avant ça ? Contactez-nous, nous sommes disponibles par téléphone.</p>
+      <a className="btn big" href="tel:067777777">
+        Nous appeler au 06 77 77 77 7
+      </a>
+      {outcome.docBase64 && outcome.docFilename && (
+        <p className="sub" style={{ marginTop: 16 }}>
+          <a
+            href={`data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,${outcome.docBase64}`}
+            download={outcome.docFilename}
+          >
+            Télécharger les statuts générés
+          </a>{" "}
+          (lien temporaire, pour les tests uniquement)
+        </p>
+      )}
     </div>
   );
 }
