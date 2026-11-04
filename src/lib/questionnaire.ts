@@ -230,6 +230,40 @@ export function progressPct(type: TypeKey, data: DraftData, associes: Associe[])
   return Math.round((checks.filter(Boolean).length / checks.length) * 100);
 }
 
+const MOTIVATION_CREATION = [
+  "Chaque grande entreprise a commencé par ce premier pas. Vous venez de le faire.",
+  "C’est parti : vous posez aujourd’hui les fondations de votre future société.",
+  "Ça avance ! Votre projet prend forme ligne après ligne.",
+  "Plus qu’un petit effort : votre entreprise est presque prête à exister.",
+  "Dernière ligne droite avant de donner vie à votre entreprise !",
+  "Dossier complet : votre aventure entrepreneuriale peut officiellement commencer.",
+];
+const MOTIVATION_MODIFICATION = [
+  "Faire évoluer sa société, c’est aussi la preuve qu’elle avance.",
+  "C’est en cours : votre société s’adapte à la suite de votre histoire.",
+  "Ça progresse, votre changement prend forme.",
+  "Plus que quelques détails avant la mise à jour de votre société.",
+  "Presque fini : votre société va bientôt refléter sa nouvelle réalité.",
+  "Dossier complet : votre changement est prêt à partir chez le greffe.",
+];
+const MOTIVATION_FERMETURE = [
+  "On vous accompagne à chaque étape de cette clôture, sans mauvaise surprise.",
+  "C’est enregistré : nous préparons déjà la suite de votre dossier.",
+  "Ça avance, votre dossier de fermeture se construit pas à pas.",
+  "Encore un peu d’informations et votre dossier sera complet.",
+  "Presque terminé : la clôture de votre société touche au but.",
+  "Dossier complet : nous prenons le relais pour la suite des démarches.",
+];
+
+// Un palier par tranche de 20 % (0, 20, 40, 60, 80, 100), pour accompagner
+// l'utilisateur d'une phrase différente à chaque vraie avancée du dossier.
+export function motivationMessage(type: TypeKey, pct: number): string {
+  const lines =
+    type === "creation" ? MOTIVATION_CREATION : type === "modification" ? MOTIVATION_MODIFICATION : MOTIVATION_FERMETURE;
+  const tier = Math.min(lines.length - 1, Math.floor(pct / 20));
+  return lines[tier];
+}
+
 export function validateStep(
   type: TypeKey,
   stepKey: string,

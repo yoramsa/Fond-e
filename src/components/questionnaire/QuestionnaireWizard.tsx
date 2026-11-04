@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowIcon } from "@/components/icons";
+import { ArrowIcon, RocketIcon } from "@/components/icons";
 import { FORMES, FormeKey, NEED_BEFORE, OPTS, PLANS, PRIX, TYPES, TypeKey, eur } from "@/lib/data";
 import {
   Associe,
@@ -12,6 +12,7 @@ import {
   apportSum,
   freshAssocie,
   freshQuestionnaire,
+  motivationMessage,
   progressPct,
   recapLines,
   sanitizeCodePostal,
@@ -301,6 +302,7 @@ export default function QuestionnaireWizard({ type }: { type: TypeKey }) {
   const apports = useMemo(() => apportSum(associes), [associes]);
   const capital = Number(data.capital) || 0;
   const pct = useMemo(() => progressPct(type, data, associes), [type, data, associes]);
+  const motivation = useMemo(() => motivationMessage(type, pct), [type, pct]);
 
   if (status === "done" && doneInfo) {
     return (
@@ -368,10 +370,18 @@ export default function QuestionnaireWizard({ type }: { type: TypeKey }) {
               </div>
             ))}
           </div>
-          <div className="meter" aria-hidden="true">
-            <div style={{ width: `${pct}%` }} />
+          <div className="meterWrap">
+            <div className="meter" role="progressbar" aria-label="Avancement du dossier" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100}>
+              <div className="fill" style={{ width: `${pct}%` }} />
+              <div className="rocket" style={{ left: `${pct}%` }} aria-hidden="true">
+                <RocketIcon />
+              </div>
+            </div>
           </div>
-          <p className="hint">{pct} % du dossier rempli</p>
+          <div className="meterRow">
+            <p className="hint">{pct} % du dossier rempli</p>
+            <p className="motivation">{motivation}</p>
+          </div>
 
           <div className="fbody">
             {stepKey === "Société" && (
