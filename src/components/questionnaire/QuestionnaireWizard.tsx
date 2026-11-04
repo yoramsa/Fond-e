@@ -489,7 +489,7 @@ export default function QuestionnaireWizard({ type }: { type: TypeKey }) {
                 {associes.map((a, i) => (
                   <div className="cardx" key={i}>
                     <h3>
-                      Associé {i + 1}
+                      {f.uni ? "Associé unique" : `Associé ${i + 1}`}
                       {associes.length > (f.uni ? 1 : 2) && (
                         <button type="button" onClick={() => removeAssocie(i)}>
                           Retirer
