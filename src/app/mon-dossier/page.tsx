@@ -12,7 +12,7 @@ export default async function MonDossierPage() {
   const supabase = await createClient();
   const { data: dossiers } = await supabase
     .from("dossiers")
-    .select("id, ref, type, status, societe_nom, created_at, submitted_at")
+    .select("id, ref, type, status, societe_nom, created_at, submitted_at, draft")
     .not("submitted_at", "is", null)
     .order("created_at", { ascending: false });
 
@@ -44,6 +44,7 @@ export default async function MonDossierPage() {
               dossiers.map((d) => {
                 const dossierPieces = (pieces ?? []).filter((p) => p.dossier_id === d.id);
                 const dossierLogs = (logs ?? []).filter((l) => l.dossier_id === d.id);
+                const draft = d.draft as { statutsBase64?: string; statutsFilename?: string } | null;
                 return (
                   <div key={d.id} className="cardx" style={{ marginTop: 24 }}>
                     <h3>
@@ -90,6 +91,18 @@ export default async function MonDossierPage() {
                           />
                         ))}
                       </>
+                    )}
+
+                    {draft?.statutsBase64 && draft?.statutsFilename && (
+                      <p className="sub">
+                        <a
+                          href={`data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,${draft.statutsBase64}`}
+                          download={draft.statutsFilename}
+                        >
+                          Télécharger les statuts générés
+                        </a>{" "}
+                        (lien temporaire, pour les tests uniquement)
+                      </p>
                     )}
                   </div>
                 );
