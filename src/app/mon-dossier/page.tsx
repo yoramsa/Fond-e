@@ -94,15 +94,18 @@ export default async function MonDossierPage() {
                     )}
 
                     {draft?.statutsBase64 && draft?.statutsFilename && (
-                      <p className="sub">
+                      <div style={{ marginTop: 16 }}>
                         <a
+                          className="btn alt"
                           href={`data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,${draft.statutsBase64}`}
                           download={draft.statutsFilename}
                         >
                           Télécharger les statuts générés
-                        </a>{" "}
-                        (lien temporaire, pour les tests uniquement)
-                      </p>
+                        </a>
+                        <p className="sub" style={{ marginTop: 8 }}>
+                          (lien temporaire, pour les tests uniquement)
+                        </p>
+                      </div>
                     )}
                   </div>
                 );

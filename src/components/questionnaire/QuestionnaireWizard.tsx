@@ -332,15 +332,18 @@ export default function QuestionnaireWizard({ type }: { type: TypeKey }) {
           </div>
 
           {doneInfo.docBase64 && doneInfo.docFilename && (
-            <p className="sub" style={{ marginTop: 24 }}>
+            <div style={{ marginTop: 24 }}>
               <a
+                className="btn alt"
                 href={`data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,${doneInfo.docBase64}`}
                 download={doneInfo.docFilename}
               >
                 Télécharger les statuts générés
-              </a>{" "}
-              (lien temporaire, pour les tests uniquement)
-            </p>
+              </a>
+              <p className="sub" style={{ marginTop: 8 }}>
+                (lien temporaire, pour les tests uniquement)
+              </p>
+            </div>
           )}
         </section>
       </div>
