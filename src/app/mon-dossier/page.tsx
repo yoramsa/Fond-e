@@ -96,7 +96,7 @@ export default async function MonDossierPage() {
                     {draft?.statutsBase64 && draft?.statutsFilename && (
                       <div style={{ marginTop: 16 }}>
                         <a
-                          className="btn alt"
+                          className="btn"
                           href={`data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,${draft.statutsBase64}`}
                           download={draft.statutsFilename}
                         >

@@ -60,18 +60,31 @@ export async function sendStatutsToCabinet(input: {
   ref: string;
   societeNom: string;
   buffer: Buffer;
+  contactNom?: string;
+  contactEmail?: string;
+  contactTelephone?: string;
 }) {
   const to = process.env.CABINET_NOTIFICATION_EMAIL;
   if (!to) {
     console.warn("CABINET_NOTIFICATION_EMAIL absente : statuts non envoyés.", input.ref);
     return;
   }
+  const contactLines = [
+    input.contactNom && `Nom : ${input.contactNom}`,
+    input.contactEmail && `E-mail : ${input.contactEmail}`,
+    input.contactTelephone && `Téléphone : ${input.contactTelephone}`,
+  ].filter(Boolean);
   await sendEmail({
     to,
     subject: `Statuts à relire — ${input.societeNom || input.ref} (${input.ref})`,
     html: `
       <p>Nouveau dossier de création SASU : <strong>${input.societeNom || input.ref}</strong> (${input.ref}).</p>
       <p>Statuts pré-remplis à partir des réponses du client, en pièce jointe — à relire avant tout usage officiel.</p>
+      ${
+        contactLines.length > 0
+          ? `<p>Coordonnées du client (tant que la confirmation automatique n'est pas active) :<br>${contactLines.join("<br>")}</p>`
+          : ""
+      }
     `,
     attachments: [{ filename: `Statuts-${input.ref}.docx`, content: input.buffer }],
   });
