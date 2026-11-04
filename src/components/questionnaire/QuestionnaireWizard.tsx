@@ -19,7 +19,7 @@ import {
   validateStep,
 } from "@/lib/questionnaire";
 import { createClient } from "@/lib/supabase/client";
-import { loadDraftDossier, saveDraftDossier, submitDossier } from "@/app/questionnaire/actions";
+import { loadDraftDossier, notifyCabinetImmediate, saveDraftDossier, submitDossier } from "@/app/questionnaire/actions";
 import { checkNomSociete, checkSiren } from "@/app/questionnaire/entreprise-actions";
 import StatutsPreview from "./StatutsPreview";
 
@@ -273,6 +273,12 @@ export default function QuestionnaireWizard({ type }: { type: TypeKey }) {
 
   async function handleSubmit() {
     setStatus("submitting");
+
+    // Prévient le cabinet par e-mail dès ce clic, indépendamment de la
+    // suite (connexion, lien magique...) : le document ne doit jamais
+    // dépendre de cette étape pour arriver au cabinet.
+    notifyCabinetImmediate({ type, forme, data, associes });
+
     const supabase = createClient();
     const { data: userData } = await supabase.auth.getUser();
 

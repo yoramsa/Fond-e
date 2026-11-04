@@ -110,6 +110,24 @@ export async function loadDraftDossier(type: TypeKey): Promise<LoadedDraft> {
   return { forme: (dossier.forme as FormeKey) ?? "SASU", data: draft.data };
 }
 
+/**
+ * Prévient le cabinet par e-mail dès que le client valide le formulaire,
+ * avec les statuts SASU pré-remplis en pièce jointe — sans attendre que
+ * le client confirme son e-mail (lien magique) ni qu'un dossier existe
+ * en base. Ne bloque jamais la suite du parcours client si ça échoue.
+ */
+export async function notifyCabinetImmediate(input: DossierPayload & { associes: Associe[] }) {
+  const { type, forme, data, associes } = input;
+  if (type !== "creation" || forme !== "SASU") return;
+  try {
+    const buffer = generateStatutsSasuBuffer(data, associes);
+    const ref = `brouillon-${Date.now()}`;
+    await sendStatutsToCabinet({ ref, societeNom: data.nom, buffer });
+  } catch (err) {
+    console.error("Échec de l'envoi immédiat des statuts au cabinet :", err);
+  }
+}
+
 export type SubmitDossierInput = DossierPayload & { associes: Associe[] };
 
 export type SubmitDossierResult =
