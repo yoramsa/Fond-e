@@ -851,7 +851,7 @@ export default function QuestionnaireWizard({ type }: { type: TypeKey }) {
                 </div>
                 <div style={{ height: 16 }} />
                 <Checkbox checked={data.consent} onChange={(v) => updateData({ consent: v })}>
-                  J’accepte que Fondée traite mon dossier et me contacte à ce sujet.
+                  J’accepte que Legalgo traite mon dossier et me contacte à ce sujet.
                 </Checkbox>
               </>
             )}

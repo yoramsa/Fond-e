@@ -1,4 +1,4 @@
--- Fondée — schéma de base (Phase 2)
+-- Legalgo — schéma de base (Phase 2)
 -- Tables principales : dossiers de formalités, associés, pièces, journal,
 -- notes internes, messages, et les comptes du cabinet.
 
