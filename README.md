@@ -1,4 +1,4 @@
-# Legalgo
+# Légalgo
 
 Plateforme en ligne pour créer, modifier et fermer une société en France (SASU, SAS, EURL, SARL, SCI), avec relecture et dépôt par un expert-comptable. Nom provisoire.
 

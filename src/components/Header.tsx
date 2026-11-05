@@ -5,8 +5,8 @@ export default function Header() {
     <header className="top">
       <div className="wrap">
         <div className="nav">
-          <Link className="logo" href="/" aria-label="Legalgo, accueil">
-            legalgo<i>.</i>
+          <Link className="logo" href="/" aria-label="Légalgo, accueil">
+            légalgo<i>.</i>
           </Link>
           <Link className="lnk hide-m" href="/#services">
             Services

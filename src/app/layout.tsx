@@ -21,9 +21,9 @@ const serif = Source_Serif_4({
 });
 
 export const metadata: Metadata = {
-  title: "Legalgo — Créez, modifiez ou fermez votre société en ligne",
+  title: "Légalgo — Créez, modifiez ou fermez votre société en ligne",
   description:
-    "Legalgo accompagne la création, la modification et la fermeture de société en France, avec relecture et dépôt par un expert-comptable.",
+    "Légalgo accompagne la création, la modification et la fermeture de société en France, avec relecture et dépôt par un expert-comptable.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

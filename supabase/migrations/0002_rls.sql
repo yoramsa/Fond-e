@@ -1,4 +1,4 @@
--- Legalgo — Row Level Security (Phase 2)
+-- Légalgo — Row Level Security (Phase 2)
 --
 -- Principe : un client ne voit que son propre dossier ; le cabinet a des
 -- droits nominatifs et limités, et doit avoir validé une authentification
