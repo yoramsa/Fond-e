@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Fondée formalités</title>
+<title>Legalgo formalités</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
@@ -531,12 +531,12 @@ function recapHTML(){
 }
 function updateRecap(){const el=$('#recap');if(el)el.innerHTML=recapHTML()}
 
-const head=()=>`<header class="top"><div class="wrap"><div class="nav"><a class="logo" href="#/" aria-label="Fondée, accueil">fondée<i>.</i></a>
+const head=()=>`<header class="top"><div class="wrap"><div class="nav"><a class="logo" href="#/" aria-label="Legalgo, accueil">legalgo<i>.</i></a>
 <button class="lnk hide-m" data-act="goto" data-to="services">Services</button>
 <button class="lnk hide-m" data-act="goto" data-to="plans">Tarifs</button>
 <a class="lnk" href="#/suivi"><span class="d">Suivre mon dossier</span><span class="m">Suivi</span></a>
 <a class="btn sm" href="#/demarrer">Commencer</a></div></div></header>`;
-const foot=()=>`<footer class="foot"><div class="wrap"><a class="logo" href="#/">fondée<i>.</i></a><span>Prototype. Nom, tarifs, options et données de démonstration provisoires.</span><span>[RAISON SOCIALE] · [SIRET] · [ADRESSE]</span><a href="#/cabinet">Espace cabinet</a></div></footer>`;
+const foot=()=>`<footer class="foot"><div class="wrap"><a class="logo" href="#/">legalgo<i>.</i></a><span>Prototype. Nom, tarifs, options et données de démonstration provisoires.</span><span>[RAISON SOCIALE] · [SIRET] · [ADRESSE]</span><a href="#/cabinet">Espace cabinet</a></div></footer>`;
 
 const svgUp='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4m0 0L7 9m5-5l5 5M4 16v3a1 1 0 001 1h14a1 1 0 001-1v-3"/></svg>';
 const svgArr='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6l6 6-6 6"/></svg>';
@@ -585,7 +585,7 @@ function homeView(){
  <div class="b3"><span class="num">03</span><h3>Nous déposons, vous suivez</h3><p>Annonce légale, dépôt au guichet unique, puis suivi en ligne jusqu’à votre Kbis.</p></div>
  </div><a class="btn" href="#/demarrer/creation" style="margin-top:28px">Créer ma société ${svgArr}</a></div></section></div>
 
- <div class="wrap"><section class="sec" style="padding-bottom:24px"><h2>Fondée, la solution tout-en-un pour les entrepreneurs</h2>
+ <div class="wrap"><section class="sec" style="padding-bottom:24px"><h2>Legalgo, la solution tout-en-un pour les entrepreneurs</h2>
  <div class="show"><div class="vis v1"><div class="mock" aria-hidden="true"><h4>Atelier Pivoine</h4>${timeline(sample)}<div class="stamp">${endLabel('creation')}</div></div></div>
  <div><h3>Un dossier qu’on peut suivre</h3><p>Chaque étape est visible en ligne, de la relecture au Kbis. Une pièce manque ? On vous le dit tout de suite et vous l’envoyez depuis votre téléphone.</p><a class="btn alt" href="#/suivi">Suivre un dossier</a></div></div>
  <div class="show rev"><div class="vis v2"><div class="mock" aria-hidden="true"><h4>Votre comptabilité</h4>
@@ -691,7 +691,7 @@ function stepContent(){
  `<div class="f"><label>Options</label></div><div class="opts">${OPTS.map(o=>`<label class="opt"><input type="checkbox" data-bind="opt.${o.k}"${S.opts[o.k]?' checked':''}><span><b>${o.n}</b><em>${o.p}</em></span></label>`).join('')}</div>`+
  `<div class="g2">${fld('Votre nom complet','contact',{req:1})}${fld('Téléphone','tel',{type:'tel',ph:'06 12 34 56 78'})}</div>`+fld('E-mail','email',{type:'email',req:1,hint:'Nous y envoyons la confirmation et chaque mise à jour.'})+
  `<div class="recap" id="recap">${recapHTML()}</div>`+
- '<div style="height:16px"></div>'+chk('consent','J’accepte que Fondée traite mon dossier et me contacte à ce sujet. [Conditions et confidentialité à rédiger]',d.consent,true)];
+ '<div style="height:16px"></div>'+chk('consent','J’accepte que Legalgo traite mon dossier et me contacte à ce sujet. [Conditions et confidentialité à rédiger]',d.consent,true)];
 }
 
 function formView(){
@@ -714,9 +714,9 @@ function formView(){
 function mailsHTML(d){
  const lbl=TYPES[d.type].label.toLowerCase();
  const prenom=d.client.split(' ')[0];
- return `<div class="mails"><div><p class="mailcap">E-mail reçu par le client</p><div class="mail"><div class="mh"><b>De :</b> Fondée &lt;dossiers@fondee.example&gt;<br><b>À :</b> ${esc(d.email)}<br><b>Objet :</b> Nous avons bien reçu votre demande, dossier ${d.ref}</div>
+ return `<div class="mails"><div><p class="mailcap">E-mail reçu par le client</p><div class="mail"><div class="mh"><b>De :</b> Legalgo &lt;dossiers@legalgo.example&gt;<br><b>À :</b> ${esc(d.email)}<br><b>Objet :</b> Nous avons bien reçu votre demande, dossier ${d.ref}</div>
  <div class="mb"><p>Bonjour ${esc(prenom)},</p><p>Merci, nous avons bien reçu votre demande de ${lbl} pour <b>${esc(d.societe)}</b>. Notre équipe s’en occupe tout de suite.</p><p>Vous pouvez suivre l’avancement à tout moment avec votre code dossier <b>${d.ref}</b>.</p><a class="btn sm" href="#/suivi" data-act="trackme">Suivre mon dossier</a></div></div></div>
- <div><p class="mailcap">Notification reçue par l’équipe</p><div class="mail"><div class="mh"><b>De :</b> Fondée &lt;automate@fondee.example&gt;<br><b>À :</b> cabinet@fondee.example<br><b>Objet :</b> Nouveau dossier, ${esc(d.societe)} (${d.forme})</div>
+ <div><p class="mailcap">Notification reçue par l’équipe</p><div class="mail"><div class="mh"><b>De :</b> Legalgo &lt;automate@legalgo.example&gt;<br><b>À :</b> cabinet@legalgo.example<br><b>Objet :</b> Nouveau dossier, ${esc(d.societe)} (${d.forme})</div>
  <div class="mb"><p>Un client vient de remplir un dossier.</p><table><tr><td>Client</td><td>${esc(d.client)}</td></tr><tr><td>Démarche</td><td>${d.nature}, ${d.forme}</td></tr><tr><td>Formule</td><td>${PLANS[d.plan].n}</td></tr><tr><td>Pièces</td><td>${d.blocked?'À compléter : '+esc(d.missing):'Complètes'}</td></tr></table><a class="btn sm" href="#/cabinet">Ouvrir dans l’espace cabinet</a></div></div></div></div>`;
 }
 function doneView(){

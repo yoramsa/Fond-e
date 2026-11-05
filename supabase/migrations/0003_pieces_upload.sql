@@ -1,4 +1,4 @@
--- Fondée — Dépôt des pièces (Phase 4)
+-- Legalgo — Dépôt des pièces (Phase 4)
 --
 -- Bucket de stockage privé pour les pièces jointes, et droits d'écriture
 -- du client sur ses propres pièces. Convention de chemin des objets :
