@@ -23,7 +23,7 @@ async function sendEmail(input: {
   try {
     const resend = new Resend(apiKey);
     const { error } = await resend.emails.send({
-      from: `Legalgo <${FROM}>`,
+      from: `Légalgo <${FROM}>`,
       to: input.to,
       subject: input.subject,
       html: input.html,
@@ -45,7 +45,7 @@ export async function sendDossierReceivedEmail(input: { to: string; ref: string;
       <p>Bonjour,</p>
       <p>Votre dossier <strong>${input.societeNom || input.ref}</strong> (référence <strong>${input.ref}</strong>) a bien été reçu.</p>
       <p>Un expert-comptable va le relire. Vous pouvez suivre son avancement et déposer vos pièces depuis votre espace, à tout moment.</p>
-      <p>— L'équipe Legalgo</p>
+      <p>— L'équipe Légalgo</p>
     `,
   });
 }

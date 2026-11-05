@@ -14,7 +14,7 @@ export default function MentionsLegalesPage() {
 
             <h2>Éditeur du site</h2>
             <p>
-              Le site Legalgo (ce nom est provisoire) est édité par [RAISON SOCIALE], [FORME
+              Le site Légalgo (ce nom est provisoire) est édité par [RAISON SOCIALE], [FORME
               JURIDIQUE] au capital de [MONTANT] €, immatriculée au Registre du commerce et des
               sociétés de [VILLE] sous le numéro [SIREN], dont le siège social est situé [ADRESSE
               COMPLÈTE].

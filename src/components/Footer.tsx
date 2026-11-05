@@ -5,7 +5,7 @@ export default function Footer() {
     <footer className="foot">
       <div className="wrap">
         <Link className="logo" href="/">
-          legalgo<i>.</i>
+          légalgo<i>.</i>
         </Link>
         <span>Nom, tarifs, options et données provisoires.</span>
         <span>[RAISON SOCIALE] · [SIRET] · [ADRESSE]</span>

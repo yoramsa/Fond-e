@@ -105,7 +105,7 @@ export default function Home() {
 
         <div className="wrap">
           <section className="sec" style={{ paddingBottom: 24 }}>
-            <h2>Legalgo, la solution tout-en-un pour les entrepreneurs</h2>
+            <h2>Légalgo, la solution tout-en-un pour les entrepreneurs</h2>
 
             <div className="show">
               <div className="vis v1">
