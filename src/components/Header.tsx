@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Logo from "./Logo";
 
 export default function Header() {
   return (
@@ -6,7 +7,7 @@ export default function Header() {
       <div className="wrap">
         <div className="nav">
           <Link className="logo" href="/" aria-label="Légalgo, accueil">
-            légalgo<i>.</i>
+            <Logo />
           </Link>
           <Link className="lnk hide-m" href="/#services">
             Services

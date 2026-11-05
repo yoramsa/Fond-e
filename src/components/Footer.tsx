@@ -1,11 +1,12 @@
 import Link from "next/link";
+import Logo from "./Logo";
 
 export default function Footer() {
   return (
     <footer className="foot">
       <div className="wrap">
         <Link className="logo" href="/">
-          légalgo<i>.</i>
+          <Logo />
         </Link>
         <span>Nom, tarifs, options et données provisoires.</span>
         <span>[RAISON SOCIALE] · [SIRET] · [ADRESSE]</span>
